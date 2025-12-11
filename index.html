@@ -1,852 +1,974 @@
-!DOCTYPE html
-html lang=de
-head
-    meta charset=UTF-8
-    meta name=viewport content=width=device-width, initial-scale=1.0
-    titleStickerei Shop – Hoiß Stickereititle
-    meta name=description content=Hochwertige Stickereien für Textilien, Werbeartikel und persönliche Projekte. Schnelle Bearbeitung und beste Qualität.
-    link rel=stylesheet href=styles.css
-    style
-         ========================================
-           SHOP-SPEZIFISCHE STILE
-           ======================================== 
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stickerei Shop mit Editor – Hoiß Stickerei</title>
+    <style>
+        :root {
+            --color-primary: #ef8006;
+            --color-primary-dark: #cc6f05;
+            --color-primary-light: #ff9a33;
+            --color-accent: #ffb347;
+            --color-text-dark: #1a1a1a;
+            --color-text-medium: #4a4a4a;
+            --color-text-light: #6b6b6b;
+            --color-bg-white: #ffffff;
+            --color-bg-light: #f5f5f5;
+            --color-border: #e0e0e0;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 0.75rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --radius-md: 6px;
+            --radius-lg: 12px;
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.15);
+            --shadow-xl: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--color-bg-light); color: var(--color-text-dark); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--spacing-md); }
 
         .shop-hero {
-            background linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-            color white;
-            padding var(--spacing-xl) var(--spacing-md);
-            text-align center;
-            border-radius var(--radius-lg);
-            margin-bottom var(--spacing-xl);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
         }
 
-        .shop-hero h1 {
-            font-size 2.5rem;
-            margin-bottom var(--spacing-md);
-            font-weight 700;
-        }
+        .shop-hero h1 { font-size: 2.5rem; margin-bottom: var(--spacing-md); font-weight: 700; }
+        .shop-hero p { font-size: 1.1rem; opacity: 0.95; max-width: 600px; margin: 0 auto; }
 
-        .shop-hero p {
-            font-size 1.1rem;
-            opacity 0.95;
-            max-width 600px;
-            margin 0 auto;
-        }
-
-         Filter Sidebar 
         .shop-container {
-            display grid;
-            grid-template-columns 250px 1fr;
-            gap var(--spacing-xl);
-            margin-bottom var(--spacing-xl);
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
         }
 
         .filter-sidebar {
-            background var(--color-bg-light);
-            padding var(--spacing-lg);
-            border-radius var(--radius-lg);
-            height fit-content;
-            position sticky;
-            top 180px;
+            background: var(--color-bg-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            height: fit-content;
+            position: sticky;
+            top: 180px;
         }
 
-        .filter-group {
-            margin-bottom var(--spacing-lg);
-        }
-
-        .filter-grouplast-child {
-            margin-bottom 0;
-        }
-
+        .filter-group { margin-bottom: var(--spacing-lg); }
         .filter-title {
-            font-weight 600;
-            font-size 1rem;
-            color var(--color-text-dark);
-            margin-bottom var(--spacing-md);
-            border-bottom 2px solid var(--color-primary);
-            padding-bottom var(--spacing-sm);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-text-dark);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: var(--spacing-sm);
         }
 
         .filter-option {
-            display flex;
-            align-items center;
-            gap var(--spacing-sm);
-            margin-bottom var(--spacing-sm);
-            cursor pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
         }
 
-        .filter-option input[type=checkbox] {
-            width 18px;
-            height 18px;
-            cursor pointer;
-            accent-color var(--color-primary);
+        .filter-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--color-primary);
         }
 
         .filter-option label {
-            cursor pointer;
-            flex 1;
-            color var(--color-text-medium);
-            transition color var(--transition-fast);
+            cursor: pointer;
+            flex: 1;
+            color: var(--color-text-medium);
+            transition: color var(--transition-fast);
         }
 
-        .filter-option inputchecked + label {
-            color var(--color-primary);
-            font-weight 600;
+        .filter-option input:checked + label {
+            color: var(--color-primary);
+            font-weight: 600;
         }
 
-        .filter-optionhover label {
-            color var(--color-primary);
-        }
-
-         Product Grid 
         .products-grid {
-            display grid;
-            grid-template-columns repeat(auto-fill, minmax(250px, 1fr));
-            gap var(--spacing-lg);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
         }
 
         .product-card {
-            background var(--color-bg-white);
-            border 1px solid var(--color-border);
-            border-radius var(--radius-lg);
-            overflow hidden;
-            transition all var(--transition-normal);
-            display flex;
-            flex-direction column;
+            background: var(--color-bg-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition-normal);
+            display: flex;
+            flex-direction: column;
         }
 
-        .product-cardhover {
-            box-shadow var(--shadow-lg);
-            transform translateY(-5px);
-            border-color var(--color-primary);
+        .product-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-5px);
+            border-color: var(--color-primary);
         }
 
         .product-image {
-            position relative;
-            width 100%;
-            padding-bottom 100%;
-            overflow hidden;
-            background var(--color-bg-light);
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            overflow: hidden;
+            background: var(--color-bg-light);
         }
 
         .product-image img {
-            position absolute;
-            top 0;
-            left 0;
-            width 100%;
-            height 100%;
-            object-fit cover;
-            transition transform var(--transition-normal);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-normal);
         }
 
-        .product-cardhover .product-image img {
-            transform scale(1.1);
-        }
+        .product-card:hover .product-image img { transform: scale(1.1); }
 
         .product-badge {
-            position absolute;
-            top 10px;
-            right 10px;
-            background var(--color-primary);
-            color white;
-            padding 5px 12px;
-            border-radius var(--radius-md);
-            font-size 0.85rem;
-            font-weight 600;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--color-primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .product-info {
-            padding var(--spacing-lg);
-            flex 1;
-            display flex;
-            flex-direction column;
+            padding: var(--spacing-lg);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .product-category {
-            color var(--color-primary);
-            font-size 0.85rem;
-            font-weight 600;
-            text-transform uppercase;
-            margin-bottom var(--spacing-xs);
+            color: var(--color-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-xs);
         }
 
         .product-name {
-            font-size 1.1rem;
-            font-weight 600;
-            color var(--color-text-dark);
-            margin-bottom var(--spacing-sm);
-            line-height 1.3;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text-dark);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.3;
         }
 
         .product-description {
-            font-size 0.9rem;
-            color var(--color-text-medium);
-            margin-bottom var(--spacing-md);
-            flex 1;
+            font-size: 0.9rem;
+            color: var(--color-text-medium);
+            margin-bottom: var(--spacing-md);
+            flex: 1;
         }
 
         .product-footer {
-            display flex;
-            justify-content space-between;
-            align-items center;
-            gap var(--spacing-md);
-            margin-top auto;
-            padding-top var(--spacing-md);
-            border-top 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-top: auto;
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-border);
         }
 
         .product-price {
-            font-size 1.3rem;
-            font-weight 700;
-            color var(--color-primary);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-primary);
         }
 
         .product-price-old {
-            font-size 0.9rem;
-            color var(--color-text-light);
-            text-decoration line-through;
-            margin-right var(--spacing-xs);
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            text-decoration: line-through;
+            margin-right: var(--spacing-xs);
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .add-to-cart, .design-btn {
+            border: none;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            font-size: 0.9rem;
         }
 
         .add-to-cart {
-            background var(--color-primary);
-            color white;
-            border none;
-            padding 10px 15px;
-            border-radius var(--radius-md);
-            cursor pointer;
-            font-weight 600;
-            transition all var(--transition-fast);
-            white-space nowrap;
+            background: var(--color-primary);
+            color: white;
+            flex: 1;
         }
 
-        .add-to-carthover {
-            background var(--color-primary-dark);
-            transform scale(1.05);
+        .add-to-cart:hover { background: var(--color-primary-dark); transform: scale(1.05); }
+
+        .design-btn {
+            background: var(--color-accent);
+            color: var(--color-text-dark);
         }
 
-        .add-to-cartactive {
-            transform scale(0.95);
+        .design-btn:hover { background: var(--color-primary); color: white; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
         }
 
-         Cart 
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .design-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            z-index: 3001;
+            border-radius: var(--radius-lg);
+            max-width: 1200px;
+            width: 90vw;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-normal);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .design-modal.active { transform: translate(-50%, -50%) scale(1); }
+
+        .modal-header {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modal-header h2 { margin: 0; font-size: 1.3rem; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+
+        .modal-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .preview-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-bg-light);
+            border-radius: var(--radius-lg);
+            position: relative;
+            min-height: 400px;
+        }
+
+        .product-preview {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .product-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #designCanvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: crosshair;
+            border: 2px dashed var(--color-primary);
+            background: rgba(239, 128, 6, 0.05);
+        }
+
+        .editor-panel {
+            background: var(--color-bg-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            overflow-y: auto;
+        }
+
+        .editor-section { margin-bottom: var(--spacing-lg); }
+        .editor-label {
+            font-weight: 600;
+            color: var(--color-text-dark);
+            margin-bottom: var(--spacing-sm);
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--color-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: white;
+        }
+
+        .upload-area:hover { background: var(--color-bg-white); border-color: var(--color-primary-dark); }
+        .upload-area.dragover { background: var(--color-primary); color: white; border-color: var(--color-primary-dark); }
+
+        #imageInput { display: none; }
+
+        .slider-group { margin-bottom: var(--spacing-md); }
+        .slider-group label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+        .slider-group input[type="range"] { width: 100%; }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tool-btn {
+            background: white;
+            border: 1px solid var(--color-border);
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+
+        .tool-btn:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+        .tool-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+        .modal-footer {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        .modal-footer button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-secondary { background: var(--color-border); color: var(--color-text-dark); }
+        .btn-secondary:hover { background: var(--color-text-light); }
+        .btn-primary { background: var(--color-primary); color: white; }
+        .btn-primary:hover { background: var(--color-primary-dark); }
+
+        /* Cart */
         .cart-container {
-            position fixed;
-            right -400px;
-            top 0;
-            width 400px;
-            height 100vh;
-            background white;
-            box-shadow -5px 0 30px rgba(0,0,0,0.2);
-            z-index 2000;
-            transition right var(--transition-normal);
-            overflow-y auto;
-            display flex;
-            flex-direction column;
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.2);
+            z-index: 2000;
+            transition: right var(--transition-normal);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
-        .cart-container.active {
-            right 0;
-        }
+        .cart-container.active { right: 0; }
 
         .cart-header {
-            background var(--color-primary);
-            color white;
-            padding var(--spacing-lg);
-            display flex;
-            justify-content space-between;
-            align-items center;
-            flex-shrink 0;
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
         }
 
-        .cart-header h2 {
-            margin 0;
-            font-size 1.3rem;
-        }
+        .cart-header h2 { margin: 0; font-size: 1.3rem; }
+        .cart-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0; width: 30px; height: 30px; }
 
-        .cart-close {
-            background none;
-            border none;
-            color white;
-            font-size 1.5rem;
-            cursor pointer;
-            padding 0;
-            width 30px;
-            height 30px;
-        }
-
-        .cart-items {
-            flex 1;
-            overflow-y auto;
-            padding var(--spacing-lg);
-        }
-
-        .cart-empty {
-            text-align center;
-            padding var(--spacing-xl);
-            color var(--color-text-medium);
-        }
+        .cart-items { flex: 1; overflow-y: auto; padding: var(--spacing-lg); }
+        .cart-empty { text-align: center; padding: var(--spacing-xl); color: var(--color-text-medium); }
 
         .cart-item {
-            display flex;
-            gap var(--spacing-md);
-            margin-bottom var(--spacing-lg);
-            padding-bottom var(--spacing-lg);
-            border-bottom 1px solid var(--color-border);
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border);
         }
 
-        .cart-itemlast-child {
-            border-bottom none;
-        }
+        .cart-item:last-child { border-bottom: none; }
 
         .cart-item-image {
-            width 80px;
-            height 80px;
-            border-radius var(--radius-md);
-            overflow hidden;
-            background var(--color-bg-light);
-            flex-shrink 0;
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--color-bg-light);
+            flex-shrink: 0;
         }
 
-        .cart-item-image img {
-            width 100%;
-            height 100%;
-            object-fit cover;
-        }
+        .cart-item-image img { width: 100%; height: 100%; object-fit: cover; }
 
-        .cart-item-details {
-            flex 1;
-        }
-
-        .cart-item-name {
-            font-weight 600;
-            margin-bottom var(--spacing-xs);
-        }
-
-        .cart-item-price {
-            color var(--color-primary);
-            font-weight 600;
-            margin-bottom var(--spacing-sm);
-        }
+        .cart-item-details { flex: 1; }
+        .cart-item-name { font-weight: 600; margin-bottom: var(--spacing-xs); font-size: 0.95rem; }
+        .cart-item-price { color: var(--color-primary); font-weight: 600; margin-bottom: var(--spacing-sm); }
 
         .cart-item-quantity {
-            display flex;
-            align-items center;
-            gap 8px;
-            width fit-content;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
         }
 
         .qty-btn {
-            background var(--color-bg-light);
-            border 1px solid var(--color-border);
-            width 24px;
-            height 24px;
-            border-radius 4px;
-            cursor pointer;
-            display flex;
-            align-items center;
-            justify-content center;
-            transition all var(--transition-fast);
-            font-weight 600;
+            background: var(--color-bg-light);
+            border: 1px solid var(--color-border);
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            font-weight: 600;
         }
 
-        .qty-btnhover {
-            background var(--color-primary);
-            color white;
-            border-color var(--color-primary);
-        }
+        .qty-btn:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
         .remove-item {
-            font-size 0.8rem;
-            color #d32f2f;
-            cursor pointer;
-            text-decoration underline;
-            margin-top var(--spacing-xs);
-            display inline-block;
-        }
-
-        .remove-itemhover {
-            color #b71c1c;
+            font-size: 0.8rem;
+            color: #d32f2f;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: var(--spacing-xs);
+            display: inline-block;
         }
 
         .cart-footer {
-            padding var(--spacing-lg);
-            border-top 2px solid var(--color-border);
-            flex-shrink 0;
+            padding: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+            flex-shrink: 0;
         }
 
-        .cart-summary {
-            margin-bottom var(--spacing-lg);
-        }
-
+        .cart-summary { margin-bottom: var(--spacing-lg); }
         .cart-summary-row {
-            display flex;
-            justify-content space-between;
-            margin-bottom var(--spacing-sm);
-            color var(--color-text-medium);
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-text-medium);
+            font-size: 0.95rem;
         }
 
         .cart-summary-row.total {
-            font-size 1.2rem;
-            font-weight 700;
-            color var(--color-text-dark);
-            border-top 1px solid var(--color-border);
-            padding-top var(--spacing-md);
-            margin-top var(--spacing-md);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--color-text-dark);
+            border-top: 1px solid var(--color-border);
+            padding-top: var(--spacing-md);
+            margin-top: var(--spacing-md);
         }
 
         .checkout-btn {
-            width 100%;
-            background var(--color-primary);
-            color white;
-            border none;
-            padding 12px;
-            border-radius var(--radius-md);
-            font-size 1.05rem;
-            font-weight 600;
-            cursor pointer;
-            transition all var(--transition-fast);
+            width: 100%;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
 
-        .checkout-btnhover {
-            background var(--color-primary-dark);
-        }
-
-        .checkout-btndisabled {
-            background #ccc;
-            cursor not-allowed;
-        }
+        .checkout-btn:hover { background: var(--color-primary-dark); }
+        .checkout-btn:disabled { background: #ccc; cursor: not-allowed; }
 
         .cart-badge {
-            position absolute;
-            top -8px;
-            right -8px;
-            background #d32f2f;
-            color white;
-            width 24px;
-            height 24px;
-            border-radius 50%;
-            display flex;
-            align-items center;
-            justify-content center;
-            font-size 0.75rem;
-            font-weight 700;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #d32f2f;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
         }
 
         .cart-toggle {
-            position relative;
-            cursor pointer;
+            position: relative;
+            cursor: pointer;
         }
 
-         Responsive 
-        @media (max-width 768px) {
-            .shop-container {
-                grid-template-columns 1fr;
-            }
-
-            .filter-sidebar {
-                position static;
-                background var(--color-bg-white);
-                border 1px solid var(--color-border);
-                order -1;
-            }
-
-            .products-grid {
-                grid-template-columns repeat(auto-fill, minmax(180px, 1fr));
-            }
-
-            .cart-container {
-                width 100%;
-                right -100%;
-            }
-
-            .shop-hero h1 {
-                font-size 1.8rem;
-            }
-        }
-
-         Overlay für Cart 
         .cart-overlay {
-            position fixed;
-            top 0;
-            left 0;
-            right 0;
-            bottom 0;
-            background rgba(0,0,0,0.3);
-            z-index 1999;
-            opacity 0;
-            visibility hidden;
-            transition all var(--transition-normal);
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
         }
 
-        .cart-overlay.active {
-            opacity 1;
-            visibility visible;
+        .cart-overlay.active { opacity: 1; visibility: visible; }
+
+        @media (max-width: 1024px) {
+            .modal-content { grid-template-columns: 1fr; }
+            .preview-area { min-height: 300px; }
         }
-    style
-head
-body
-    !-- Header Placeholder --
-    div id=header-placeholderdiv
 
-    !-- Main Content --
-    main
-        !-- Hero Section --
-        section class=shop-hero
-            div class=container
-                h1Stickerei Shoph1
-                pHochwertige Stickereien für Textilien, Werbeartikel und persönliche Projektep
-            div
-        section
+        @media (max-width: 768px) {
+            .shop-container { grid-template-columns: 1fr; }
+            .filter-sidebar { position: static; background: var(--color-bg-white); border: 1px solid var(--color-border); order: -1; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+            .cart-container { width: 100%; right: -100%; }
+            .shop-hero h1 { font-size: 1.8rem; }
+            .button-group { flex-direction: column; }
+            .design-modal { width: 95vw; max-height: 95vh; }
+            .modal-content { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="shop-hero">
+            <div class="container">
+                <h1>🎨 Stickerei Shop mit Designer</h1>
+                <p>Gestalten Sie Ihre Produkte live mit dem integrierten Design-Editor</p>
+            </div>
+        </section>
 
-        section class=container style=padding-bottom var(--spacing-xl);
-            !-- Cart Toggle --
-            div style=display flex; justify-content flex-end; margin-bottom var(--spacing-lg);
-                button class=cart-toggle id=cartToggle style=background var(--color-primary); color white; padding 10px 20px; border none; border-radius var(--radius-md); cursor pointer; font-weight 600; display flex; align-items center; gap 10px;
-                    svg width=20 height=20 viewBox=0 0 24 24 fill=none stroke=currentColor stroke-width=2
-                        circle cx=9 cy=21 r=1circle
-                        circle cx=20 cy=21 r=1circle
-                        path d=M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6path
-                    svg
-                    Warenkorb (span id=cartCount0span)
-                button
-            div
+        <section class="container" style="padding-bottom: var(--spacing-xl); padding-top: var(--spacing-xl);">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: var(--spacing-lg);">
+                <button class="cart-toggle" id="cartToggle" style="background: var(--color-primary); color: white; padding: 10px 20px; border: none; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Warenkorb (<span id="cartCount">0</span>)
+                </button>
+            </div>
 
-            !-- Shop Container --
-            div class=shop-container
-                !-- Sidebar Filter --
-                aside class=filter-sidebar
-                    div class=filter-group
-                        div class=filter-titleKategoriendiv
-                        div class=filter-option
-                            input type=checkbox id=filter-category-all checked
-                            label for=filter-category-allAlle Kategorienlabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-category-shirts
-                            label for=filter-category-shirtsT-Shirts & Poloslabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-category-caps
-                            label for=filter-category-capsCaps & Hütelabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-category-bags
-                            label for=filter-category-bagsTaschen & Rucksäckelabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-category-accessories
-                            label for=filter-category-accessoriesZubehörlabel
-                        div
-                    div
+            <div class="shop-container">
+                <aside class="filter-sidebar">
+                    <div class="filter-group">
+                        <div class="filter-title">Kategorien</div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="filter-all" checked>
+                            <label for="filter-all">Alle Kategorien</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="filter-shirts">
+                            <label for="filter-shirts">T-Shirts</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="filter-caps">
+                            <label for="filter-caps">Caps</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="checkbox" id="filter-bags">
+                            <label for="filter-bags">Taschen</label>
+                        </div>
+                    </div>
+                </aside>
 
-                    div class=filter-group
-                        div class=filter-titlePreisdiv
-                        div class=filter-option
-                            input type=checkbox id=filter-price-low
-                            label for=filter-price-low€ - €€€€ (0-50€)label
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-price-mid
-                            label for=filter-price-mid€€ - €€€€ (50-100€)label
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-price-high
-                            label for=filter-price-high€€€ - €€€€ (100€+)label
-                        div
-                    div
+                <div class="products-grid" id="productsGrid"></div>
+            </div>
+        </section>
+    </main>
 
-                    div class=filter-group
-                        div class=filter-titleFarbediv
-                        div class=filter-option
-                            input type=checkbox id=filter-color-black
-                            label for=filter-color-blackSchwarzlabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-color-white
-                            label for=filter-color-whiteWeißlabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-color-navy
-                            label for=filter-color-navyNavylabel
-                        div
-                        div class=filter-option
-                            input type=checkbox id=filter-color-red
-                            label for=filter-color-redRotlabel
-                        div
-                    div
-                aside
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="design-modal" id="designModal">
+        <div class="modal-header">
+            <h2>Design Editor – <span id="productNameInModal">Produkt</span></h2>
+            <button class="modal-close" id="modalClose">✕</button>
+        </div>
+        <div class="modal-content">
+            <div class="preview-area">
+                <div class="product-preview">
+                    <img id="productPreview" src="" alt="Produkt">
+                    <canvas id="designCanvas"></canvas>
+                </div>
+            </div>
 
-                !-- Products Grid --
-                div class=products-grid id=productsGrid
-                    !-- Products werden hier eingefügt --
-                div
-            div
-        section
-    main
+            <div class="editor-panel">
+                <div class="editor-section">
+                    <label class="editor-label">Logo hochladen</label>
+                    <div class="upload-area" id="uploadArea">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 8px; display: block; color: var(--color-primary);">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style="margin: 0; font-weight: 600;">Bild hochladen</p>
+                        <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: var(--color-text-medium);">PNG, JPG, SVG</p>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*">
+                </div>
 
-    !-- Cart Overlay --
-    div class=cart-overlay id=cartOverlaydiv
+                <div class="editor-section">
+                    <label class="editor-label">Position</label>
+                    <div class="slider-group">
+                        <label>Horizontal<span id="xValue">50</span>%</label>
+                        <input type="range" id="xSlider" min="0" max="100" value="50">
+                    </div>
+                    <div class="slider-group">
+                        <label>Vertikal<span id="yValue">50</span>%</label>
+                        <input type="range" id="ySlider" min="0" max="100" value="50">
+                    </div>
+                </div>
 
-    !-- Cart Panel --
-    div class=cart-container id=cartContainer
-        div class=cart-header
-            h2Warenkorbh2
-            button class=cart-close id=cartClose✕button
-        div
-        div class=cart-items id=cartItems
-            div class=cart-emptyIhr Warenkorb ist leerdiv
-        div
-        div class=cart-footer
-            div class=cart-summary
-                div class=cart-summary-row
-                    spanSubtotalspan
-                    span id=cartSubtotal€0,00span
-                div
-                div class=cart-summary-row
-                    spanVersandspan
-                    span id=cartShipping€5,99span
-                div
-                div class=cart-summary-row total
-                    spanGesamtspan
-                    span id=cartTotal€5,99span
-                div
-            div
-            button class=checkout-btn id=checkoutBtnZur Kassebutton
-        div
-    div
+                <div class="editor-section">
+                    <label class="editor-label">Größe (px)</label>
+                    <div class="slider-group">
+                        <label>Größe<span id="sizeValue">100</span>px</label>
+                        <input type="range" id="sizeSlider" min="20" max="200" value="100">
+                    </div>
+                </div>
 
-    !-- Footer Placeholder --
-    div id=footer-placeholderdiv
+                <div class="editor-section">
+                    <label class="editor-label">Rotation</label>
+                    <div class="slider-group">
+                        <label>Winkel<span id="rotationValue">0</span>°</label>
+                        <input type="range" id="rotationSlider" min="0" max="360" value="0">
+                    </div>
+                </div>
 
-    !-- Scripts --
-    script src=main.jsscript
-    script
-         ========================================
-         SHOP JAVASCRIPT
-         ========================================
+                <div class="editor-section">
+                    <label class="editor-label">Transparenz</label>
+                    <div class="slider-group">
+                        <label>Deckkraft<span id="opacityValue">100</span>%</label>
+                        <input type="range" id="opacitySlider" min="0" max="100" value="100">
+                    </div>
+                </div>
 
+                <div class="editor-section">
+                    <label class="editor-label">Werkzeuge</label>
+                    <div class="tools-grid">
+                        <button class="tool-btn" id="resetBtn">Zurücksetzen</button>
+                        <button class="tool-btn" id="centerBtn">Zentrieren</button>
+                        <button class="tool-btn" id="flipHBtn">Spiegeln H</button>
+                        <button class="tool-btn" id="flipVBtn">Spiegeln V</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" id="modalCancel">Abbrechen</button>
+            <button class="btn-primary" id="modalSave">Design speichern</button>
+        </div>
+    </div>
+
+    <!-- Cart -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-container" id="cartContainer">
+        <div class="cart-header">
+            <h2>Warenkorb</h2>
+            <button class="cart-close" id="cartClose">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty">Ihr Warenkorb ist leer</div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-summary">
+                <div class="cart-summary-row">
+                    <span>Subtotal:</span>
+                    <span id="cartSubtotal">€0,00</span>
+                </div>
+                <div class="cart-summary-row">
+                    <span>Versand:</span>
+                    <span id="cartShipping">€5,99</span>
+                </div>
+                <div class="cart-summary-row total">
+                    <span>Gesamt:</span>
+                    <span id="cartTotal">€5,99</span>
+                </div>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Zur Kasse</button>
+        </div>
+    </div>
+
+    <script>
         const products = [
-            {
-                id 1,
-                name 'Premium Polo Shirt',
-                category 'shirts',
-                price 24.99,
-                oldPrice 34.99,
-                image 'httpsimages.unsplash.comphoto-1591028088525-491b763b72efw=400&h=400&fit=crop',
-                color 'navy',
-                badge 'Sale'
-            },
-            {
-                id 2,
-                name 'Classic T-Shirt',
-                category 'shirts',
-                price 14.99,
-                image 'httpsimages.unsplash.comphoto-1521572163474-6864f9cf17abw=400&h=400&fit=crop',
-                color 'black'
-            },
-            {
-                id 3,
-                name 'Business Cap',
-                category 'caps',
-                price 15.99,
-                image 'httpsimages.unsplash.comphoto-1558618666-fcd25c85cd64w=400&h=400&fit=crop',
-                color 'black'
-            },
-            {
-                id 4,
-                name 'Trucker Cap',
-                category 'caps',
-                price 18.99,
-                oldPrice 24.99,
-                image 'httpsimages.unsplash.comphoto-1552062407-c551eeda4bbbw=400&h=400&fit=crop',
-                color 'white',
-                badge 'Sale'
-            },
-            {
-                id 5,
-                name 'Laptop Rucksack',
-                category 'bags',
-                price 49.99,
-                image 'httpsimages.unsplash.comphoto-1553062407-98eeb64c6a62w=400&h=400&fit=crop',
-                color 'black'
-            },
-            {
-                id 6,
-                name 'Messenger Tasche',
-                category 'bags',
-                price 39.99,
-                image 'httpsimages.unsplash.comphoto-1553062407-98eeb64c6a62w=400&h=400&fit=crop',
-                color 'navy'
-            },
-            {
-                id 7,
-                name 'Kaffee Becher',
-                category 'accessories',
-                price 9.99,
-                image 'httpsimages.unsplash.comphoto-1594681692158-f0c96ba55b40w=400&h=400&fit=crop'
-            },
-            {
-                id 8,
-                name 'USB-Stick 16GB',
-                category 'accessories',
-                price 12.99,
-                oldPrice 19.99,
-                image 'httpsimages.unsplash.comphoto-1597872200969-2b65d56bd16bw=400&h=400&fit=crop',
-                badge 'Sale'
-            }
+            {id: 1, name: 'Premium Polo', category: 'shirts', price: 24.99, oldPrice: 34.99, image: 'https://images.unsplash.com/photo-1591028088525-491b763b72ef?w=400&h=400&fit=crop'},
+            {id: 2, name: 'Classic T-Shirt', category: 'shirts', price: 14.99, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop'},
+            {id: 3, name: 'Business Cap', category: 'caps', price: 15.99, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop'},
+            {id: 4, name: 'Trucker Cap', category: 'caps', price: 18.99, oldPrice: 24.99, image: 'https://images.unsplash.com/photo-1552062407-c551eeda4bbb?w=400&h=400&fit=crop'},
+            {id: 5, name: 'Laptop Rucksack', category: 'bags', price: 49.99, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop'},
         ];
 
+        let editorState = {currentProduct: null, uploadedImage: null, x: 50, y: 50, size: 100, rotation: 0, opacity: 100, flipH: false, flipV: false};
         let cart = [];
-        const cartCount = document.getElementById('cartCount');
-        const cartContainer = document.getElementById('cartContainer');
-        const cartOverlay = document.getElementById('cartOverlay');
-        const cartToggle = document.getElementById('cartToggle');
-        const cartClose = document.getElementById('cartClose');
-        const productsGrid = document.getElementById('productsGrid');
 
-         Produkte rendern
-        function renderProducts(productsToRender = products) {
-            productsGrid.innerHTML = productsToRender.map(product = `
-                div class=product-card
-                    div class=product-image
-                        img src=${product.image} alt=${product.name}
-                        ${product.badge  `span class=product-badge${product.badge}span`  ''}
-                    div
-                    div class=product-info
-                        div class=product-category${product.category}div
-                        h3 class=product-name${product.name}h3
-                        p class=product-descriptionHochwertig bestickt mit Ihrem Designp
-                        div class=product-footer
-                            div
-                                ${product.oldPrice  `span class=product-price-old€${product.oldPrice.toFixed(2)}span`  ''}
-                                div class=product-price€${product.price.toFixed(2)}div
-                            div
-                            button class=add-to-cart onclick=addToCart(${product.id})+ In den Warenkorbbutton
-                        div
-                    div
-                div
+        const canvas = document.getElementById('designCanvas');
+        const ctx = canvas.getContext('2d');
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+
+        canvas.width = 300;
+        canvas.height = 300;
+
+        uploadArea.addEventListener('click', () => imageInput.click());
+        uploadArea.addEventListener('dragover', (e) => {e.preventDefault(); uploadArea.classList.add('dragover');});
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleImageUpload(e.dataTransfer.files[0]);
+        });
+        imageInput.addEventListener('change', (e) => {if (e.target.files.length) handleImageUpload(e.target.files[0]);});
+
+        function handleImageUpload(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {editorState.uploadedImage = img; redrawDesign();};
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function redrawDesign() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!editorState.uploadedImage) return;
+
+            const x = (editorState.x / 100) * canvas.width;
+            const y = (editorState.y / 100) * canvas.height;
+            const size = editorState.size;
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate((editorState.rotation * Math.PI) / 180);
+            ctx.scale(editorState.flipH ? -1 : 1, editorState.flipV ? -1 : 1);
+            ctx.globalAlpha = editorState.opacity / 100;
+            ctx.drawImage(editorState.uploadedImage, -size / 2, -size / 2, size, size);
+            ctx.restore();
+        }
+
+        ['xSlider', 'ySlider', 'sizeSlider', 'rotationSlider', 'opacitySlider'].forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                const key = {xSlider: 'x', ySlider: 'y', sizeSlider: 'size', rotationSlider: 'rotation', opacitySlider: 'opacity'}[id];
+                editorState[key] = parseInt(e.target.value);
+                document.getElementById(id.replace('Slider', 'Value')).textContent = editorState[key];
+                redrawDesign();
+            });
+        });
+
+        document.getElementById('centerBtn').addEventListener('click', () => {
+            editorState.x = editorState.y = 50;
+            document.getElementById('xSlider').value = document.getElementById('ySlider').value = 50;
+            document.getElementById('xValue').textContent = document.getElementById('yValue').textContent = '50';
+            redrawDesign();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            editorState = {currentProduct: editorState.currentProduct, uploadedImage: null, x: 50, y: 50, size: 100, rotation: 0, opacity: 100, flipH: false, flipV: false};
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            redrawDesign();
+        });
+
+        document.getElementById('flipHBtn').addEventListener('click', function() {
+            editorState.flipH = !editorState.flipH;
+            this.classList.toggle('active');
+            redrawDesign();
+        });
+
+        document.getElementById('flipVBtn').addEventListener('click', function() {
+            editorState.flipV = !editorState.flipV;
+            this.classList.toggle('active');
+            redrawDesign();
+        });
+
+        function openDesignEditor(productId) {
+            const product = products.find(p => p.id === productId);
+            editorState.currentProduct = product;
+            editorState.uploadedImage = null;
+            document.getElementById('productNameInModal').textContent = product.name;
+            document.getElementById('productPreview').src = product.image;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('designModal').classList.add('active');
+            redrawDesign();
+        }
+
+        function closeDesignEditor() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.getElementById('designModal').classList.remove('active');
+        }
+
+        document.getElementById('modalClose').addEventListener('click', closeDesignEditor);
+        document.getElementById('modalCancel').addEventListener('click', closeDesignEditor);
+        document.getElementById('modalOverlay').addEventListener('click', closeDesignEditor);
+
+        document.getElementById('modalSave').addEventListener('click', () => {
+            if (!editorState.uploadedImage) {alert('Bitte laden Sie ein Logo hoch!'); return;}
+            const designUrl = canvas.toDataURL('image/png');
+            addToCart(editorState.currentProduct.id, designUrl);
+            closeDesignEditor();
+        });
+
+        function renderProducts() {
+            document.getElementById('productsGrid').innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${p.image}" alt="${p.name}">
+                        ${p.oldPrice ? '<span class="product-badge">Sale</span>' : ''}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${p.category}</div>
+                        <h3 class="product-name">${p.name}</h3>
+                        <p class="product-description">Perfekt zum Besticken</p>
+                        <div class="product-footer">
+                            <div>
+                                ${p.oldPrice ? '<span class="product-price-old">€' + p.oldPrice.toFixed(2) + '</span>' : ''}
+                                <div class="product-price">€${p.price.toFixed(2)}</div>
+                            </div>
+                            <div class="button-group">
+                                <button class="design-btn" onclick="openDesignEditor(${p.id})">✏️ Design</button>
+                                <button class="add-to-cart" onclick="addToCart(${p.id})">+ Warenkorb</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             `).join('');
         }
 
-         In Warenkorb hinzufügen
-        function addToCart(productId) {
-            const product = products.find(p = p.id === productId);
-            const existingItem = cart.find(item = item.id === productId);
-
-            if (existingItem) {
-                existingItem.quantity++;
-            } else {
-                cart.push({ ...product, quantity 1 });
-            }
-
+        function addToCart(productId, designUrl = null) {
+            const product = products.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId && item.designUrl === designUrl);
+            if (existing) existing.quantity++;
+            else cart.push({...product, quantity: 1, designUrl});
             updateCart();
             openCart();
         }
 
-         Warenkorb aktualisieren
         function updateCart() {
-             Count
-            const count = cart.reduce((sum, item) = sum + item.quantity, 0);
-            cartCount.textContent = count;
-
-             Items
-            const cartItemsContainer = document.getElementById('cartItems');
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = 'div class=cart-emptyIhr Warenkorb ist leerdiv';
-            } else {
-                cartItemsContainer.innerHTML = cart.map(item = `
-                    div class=cart-item
-                        div class=cart-item-image
-                            img src=${item.image} alt=${item.name}
-                        div
-                        div class=cart-item-details
-                            div class=cart-item-name${item.name}div
-                            div class=cart-item-price€${(item.price  item.quantity).toFixed(2)}div
-                            div class=cart-item-quantity
-                                button class=qty-btn onclick=changeQuantity(${item.id}, -1)−button
-                                span style=width 30px; text-align center;${item.quantity}span
-                                button class=qty-btn onclick=changeQuantity(${item.id}, 1)+button
-                            div
-                            div class=remove-item onclick=removeFromCart(${item.id})Entfernendiv
-                        div
-                    div
-                `).join('');
-            }
-
-             Totals
-            const subtotal = cart.reduce((sum, item) = sum + item.price  item.quantity, 0);
-            const shipping = cart.length  0  5.99  0;
+            const count = cart.reduce((s, i) => s + i.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+            const container = document.getElementById('cartItems');
+            if (!cart.length) {container.innerHTML = '<div class="cart-empty">Ihr Warenkorb ist leer</div>'; return;}
+            container.innerHTML = cart.map((item, i) => `
+                <div class="cart-item">
+                    <div class="cart-item-image"><img src="${item.image}" alt="${item.name}"></div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.name}</div>
+                        ${item.designUrl ? '<div style="font-size: 0.8rem; color: var(--color-primary); margin-bottom: 4px;">✓ Mit Design</div>' : ''}
+                        <div class="cart-item-price">€${(item.price * item.quantity).toFixed(2)}</div>
+                        <div class="cart-item-quantity">
+                            <button class="qty-btn" onclick="changeQuantity(${i}, -1)">−</button>
+                            <span style="width: 30px; text-align: center;">${item.quantity}</span>
+                            <button class="qty-btn" onclick="changeQuantity(${i}, 1)">+</button>
+                        </div>
+                        <div class="remove-item" onclick="removeFromCart(${i})">Entfernen</div>
+                    </div>
+                </div>
+            `).join('');
+            const subtotal = cart.reduce((s, item) => s + item.price * item.quantity, 0);
+            const shipping = cart.length ? 5.99 : 0;
             const total = subtotal + shipping;
-
             document.getElementById('cartSubtotal').textContent = '€' + subtotal.toFixed(2).replace('.', ',');
             document.getElementById('cartShipping').textContent = '€' + shipping.toFixed(2).replace('.', ',');
             document.getElementById('cartTotal').textContent = '€' + total.toFixed(2).replace('.', ',');
-
-             Checkout Button
-            document.getElementById('checkoutBtn').disabled = cart.length === 0;
+            document.getElementById('checkoutBtn').disabled = !cart.length;
         }
 
-         Menge ändern
-        function changeQuantity(productId, change) {
-            const item = cart.find(i = i.id === productId);
-            if (item) {
-                item.quantity += change;
-                if (item.quantity = 0) {
-                    removeFromCart(productId);
-                } else {
-                    updateCart();
-                }
-            }
+        function changeQuantity(i, delta) {
+            cart[i].quantity += delta;
+            if (cart[i].quantity <= 0) removeFromCart(i);
+            else updateCart();
         }
 
-         Aus Warenkorb entfernen
-        function removeFromCart(productId) {
-            cart = cart.filter(item = item.id !== productId);
+        function removeFromCart(i) {
+            cart.splice(i, 1);
             updateCart();
         }
 
-         Warenkorb öffnen
         function openCart() {
-            cartContainer.classList.add('active');
-            cartOverlay.classList.add('active');
+            document.getElementById('cartContainer').classList.add('active');
+            document.getElementById('cartOverlay').classList.add('active');
         }
 
-         Warenkorb schließen
         function closeCart() {
-            cartContainer.classList.remove('active');
-            cartOverlay.classList.remove('active');
+            document.getElementById('cartContainer').classList.remove('active');
+            document.getElementById('cartOverlay').classList.remove('active');
         }
 
-         Event Listener
-        cartToggle.addEventListener('click', () = {
-            if (cartContainer.classList.contains('active')) {
-                closeCart();
-            } else {
-                openCart();
-            }
+        document.getElementById('cartToggle').addEventListener('click', () => {
+            document.getElementById('cartContainer').classList.contains('active') ? closeCart() : openCart();
         });
 
-        cartClose.addEventListener('click', closeCart);
-        cartOverlay.addEventListener('click', closeCart);
+        document.getElementById('cartClose').addEventListener('click', closeCart);
+        document.getElementById('cartOverlay').addEventListener('click', closeCart);
 
-         Checkout Button
-        document.getElementById('checkoutBtn').addEventListener('click', () = {
-            alert('Vielen Dank! Die Bestellung wird weitergeleitet zu PayPal oder Stripe.nnGesamtbetrag ' + document.getElementById('cartTotal').textContent);
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+            alert('Vielen Dank! Die Bestellung wird weitergeleitet.\n\nGesamtbetrag: ' + document.getElementById('cartTotal').textContent);
         });
 
-         Filter
-        document.getElementById('filter-category-all').addEventListener('change', (e) = {
-            if (e.target.checked) {
-                document.querySelectorAll('[id^=filter-category-]').forEach(cb = {
-                    if (cb.id !== 'filter-category-all') cb.checked = false;
-                });
-            }
-        });
-
-         Initiale Ansicht
         renderProducts();
         updateCart();
-    script
-body
-html
+    </script>
+</body>
+</html>
