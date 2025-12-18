@@ -6,11 +6,7 @@
     <title>Produktkatalog - Anfragesystem</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
         :root {
             --color-primary: #ef8006;
@@ -23,100 +19,123 @@
             --color-bg-white: #ffffff;
             --color-bg-light: #f5f5f5;
             --color-border: #e0e0e0;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: var(--color-bg-light);
             color: var(--color-text-dark);
+            line-height: 1.6;
         }
 
-        .header {
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        header {
             background: var(--color-bg-white);
-            padding: 2rem;
+            padding: var(--spacing-lg) 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            margin-bottom: var(--spacing-xl);
         }
 
-        .header h1 {
+        h1 {
             color: var(--color-primary);
-            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
         }
 
         .filters {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr;
-            gap: 1rem;
-            max-width: 1400px;
-            margin: 0 auto 2rem;
-            padding: 0 2rem;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            background: var(--color-bg-white);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .search-box, .filter-select {
-            padding: 0.75rem 1rem;
+        .search-box, select {
+            padding: var(--spacing-sm) var(--spacing-md);
             border: 2px solid var(--color-border);
             border-radius: 8px;
             font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
             transition: border-color 0.3s;
         }
 
-        .search-box:focus, .filter-select:focus {
+        .search-box:focus, select:focus {
             outline: none;
             border-color: var(--color-primary);
         }
 
-        .products-grid {
+        .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem 4rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
         }
 
         .product-card {
             background: var(--color-bg-white);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(239, 128, 6, 0.15);
         }
 
         .product-image {
             width: 100%;
-            height: 250px;
-            object-fit: cover;
+            height: 300px;
+            object-fit: contain;
             background: var(--color-bg-light);
+            padding: var(--spacing-md);
         }
 
         .product-info {
-            padding: 1.5rem;
+            padding: var(--spacing-md);
         }
 
         .product-manufacturer {
             color: var(--color-primary);
+            font-size: 0.875rem;
             font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-xs);
         }
 
         .product-name {
-            font-size: 1.1rem;
+            font-size: 1.125rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
             color: var(--color-text-dark);
+            margin-bottom: var(--spacing-sm);
         }
 
         .product-variants {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: var(--color-text-light);
-            margin-bottom: 1rem;
+            margin-bottom: var(--spacing-sm);
         }
 
         .product-price {
@@ -125,7 +144,7 @@
             color: var(--color-primary);
         }
 
-        /* Modal Styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -133,21 +152,21 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
             overflow-y: auto;
+            padding: var(--spacing-lg);
         }
 
         .modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
         }
 
         .modal-content {
             background: var(--color-bg-white);
-            border-radius: 12px;
+            border-radius: 16px;
             max-width: 900px;
             width: 100%;
             max-height: 90vh;
@@ -155,174 +174,186 @@
             position: relative;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 2rem;
-            border-bottom: 1px solid var(--color-border);
-        }
-
         .modal-close {
-            background: none;
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: var(--color-primary);
+            color: white;
             border: none;
-            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: var(--color-text-light);
-            line-height: 1;
+            z-index: 10;
+            transition: background 0.3s;
         }
 
         .modal-close:hover {
-            color: var(--color-primary);
+            background: var(--color-primary-dark);
         }
 
         .modal-body {
-            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl);
         }
 
-        .modal-product-info {
-            margin-bottom: 2rem;
+        .modal-image-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .modal-product-info h2 {
+        .modal-product-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            background: var(--color-bg-light);
+            padding: var(--spacing-md);
+            border-radius: 12px;
+        }
+
+        .modal-info-section h2 {
+            font-size: 1.75rem;
             color: var(--color-text-dark);
-            margin-bottom: 0.5rem;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .modal-product-info p {
-            color: var(--color-text-medium);
-            margin-bottom: 1rem;
+        .modal-manufacturer {
+            color: var(--color-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-md);
         }
 
         .modal-price {
             font-size: 2rem;
             font-weight: 700;
             color: var(--color-primary);
-            margin-bottom: 2rem;
+            margin-bottom: var(--spacing-lg);
         }
 
         .variant-selector {
-            margin-bottom: 2rem;
+            margin-bottom: var(--spacing-lg);
         }
 
         .variant-selector label {
             display: block;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: var(--spacing-xs);
             color: var(--color-text-dark);
         }
 
         .variant-selector select {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--color-border);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: var(--color-bg-white);
-            cursor: pointer;
         }
 
-        .variant-selector select:focus {
-            outline: none;
-            border-color: var(--color-primary);
+        .size-table {
+            margin-top: var(--spacing-md);
         }
 
-        .size-quantity-table {
+        .size-table table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
         }
 
-        .size-quantity-table th,
-        .size-quantity-table td {
-            padding: 0.75rem;
+        .size-table th,
+        .size-table td {
+            padding: var(--spacing-sm);
             text-align: left;
             border-bottom: 1px solid var(--color-border);
         }
 
-        .size-quantity-table th {
+        .size-table th {
             background: var(--color-bg-light);
             font-weight: 600;
             color: var(--color-text-dark);
         }
 
-        .size-quantity-table input {
+        .size-table input[type="number"] {
             width: 80px;
             padding: 0.5rem;
             border: 2px solid var(--color-border);
             border-radius: 6px;
             font-size: 1rem;
+            text-align: center;
         }
 
-        .size-quantity-table input:focus {
+        .size-table input[type="number"]:focus {
             outline: none;
             border-color: var(--color-primary);
         }
 
         .add-to-cart-btn {
             width: 100%;
-            padding: 1rem;
+            padding: var(--spacing-md);
             background: var(--color-primary);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1.125rem;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
-            margin-top: 1.5rem;
+            margin-top: var(--spacing-md);
         }
 
         .add-to-cart-btn:hover {
             background: var(--color-primary-dark);
         }
 
-        .add-to-cart-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        /* Anfragekorb Button */
+        /* Anfragekorb */
         .cart-float-btn {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
             background: var(--color-primary);
             color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 50px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
             cursor: pointer;
-            font-weight: 600;
-            z-index: 999;
-            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(239, 128, 6, 0.4);
+            z-index: 900;
+            transition: transform 0.3s;
         }
 
         .cart-float-btn:hover {
-            background: var(--color-primary-dark);
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
 
         .cart-badge {
-            background: white;
-            color: var(--color-primary);
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
         }
 
-        /* Anfragekorb Sidebar */
         .cart-sidebar {
             position: fixed;
             top: 0;
-            right: -500px;
-            width: 500px;
+            right: -450px;
+            width: 450px;
             height: 100%;
             background: var(--color-bg-white);
-            box-shadow: -4px 0 12px rgba(0,0,0,0.2);
+            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
+            z-index: 1100;
             transition: right 0.3s;
-            z-index: 1001;
             display: flex;
             flex-direction: column;
         }
@@ -332,128 +363,128 @@
         }
 
         .cart-header {
-            padding: 2rem;
-            border-bottom: 2px solid var(--color-border);
+            padding: var(--spacing-lg);
+            background: var(--color-primary);
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .cart-header h2 {
-            color: var(--color-primary);
+        .cart-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .cart-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
         .cart-items {
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
+            padding: var(--spacing-md);
         }
 
         .cart-item {
-            background: var(--color-bg-light);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
         }
 
-        .cart-item-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            background: var(--color-bg-light);
+            border-radius: 8px;
+        }
+
+        .cart-item-info {
+            flex: 1;
         }
 
         .cart-item-name {
             font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .cart-item-variant {
+            font-size: 0.875rem;
+            color: var(--color-text-light);
+            margin-bottom: 0.25rem;
         }
 
         .cart-item-remove {
-            background: none;
+            background: #e74c3c;
+            color: white;
             border: none;
-            color: #d32f2f;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 0.875rem;
         }
 
         .cart-footer {
-            padding: 1.5rem;
+            padding: var(--spacing-lg);
             border-top: 2px solid var(--color-border);
         }
 
-        .cart-total {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            margin-bottom: 1rem;
-        }
-
-        .submit-inquiry-btn {
+        .submit-request-btn {
             width: 100%;
-            padding: 1rem;
+            padding: var(--spacing-md);
             background: var(--color-primary);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1.125rem;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
         }
 
-        .submit-inquiry-btn:hover {
+        .submit-request-btn:hover {
             background: var(--color-primary-dark);
         }
 
-        .submit-inquiry-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .empty-cart {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--color-text-light);
         }
 
-        /* Anfrageformular */
-        .inquiry-form {
-            display: none;
-        }
-
-        .inquiry-form.active {
-            display: block;
+        /* Request Form Modal */
+        .request-form {
+            padding: var(--spacing-lg);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-md);
         }
 
         .form-group label {
             display: block;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--color-text-dark);
+            margin-bottom: var(--spacing-xs);
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
+            padding: var(--spacing-sm);
             border: 2px solid var(--color-border);
             border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
             font-size: 1rem;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--color-primary);
         }
 
         .form-group textarea {
+            min-height: 120px;
             resize: vertical;
-            min-height: 100px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            font-size: 1.2rem;
-            color: var(--color-text-medium);
         }
 
         @media (max-width: 768px) {
@@ -461,7 +492,7 @@
                 grid-template-columns: 1fr;
             }
 
-            .products-grid {
+            .modal-body {
                 grid-template-columns: 1fr;
             }
 
@@ -469,108 +500,79 @@
                 width: 100%;
                 right: -100%;
             }
-
-            .modal-content {
-                margin: 0;
-                max-height: 100vh;
-                border-radius: 0;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🛍️ Produktkatalog</h1>
-        <p>Stöbern Sie in unserem Sortiment und starten Sie Ihre Anfrage</p>
+    <header>
+        <div class="container">
+            <h1>🛍️ Produktkatalog</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="filters">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Suche nach Produktname, Hersteller oder SKU...">
+            <select id="categoryFilter">
+                <option value="">Alle Kategorien</option>
+            </select>
+            <select id="manufacturerFilter">
+                <option value="">Alle Hersteller</option>
+            </select>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <!-- Produkte werden hier dynamisch geladen -->
+        </div>
     </div>
 
-    <div class="filters">
-        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Suche nach Produktname, Hersteller oder SKU...">
-        <select class="filter-select" id="categoryFilter">
-            <option value="">Alle Kategorien</option>
-        </select>
-        <select class="filter-select" id="manufacturerFilter">
-            <option value="">Alle Hersteller</option>
-        </select>
-    </div>
-
-    <div id="loadingMessage" class="loading">
-        Lade Produkte aus Excel-Datei...
-    </div>
-
-    <div class="products-grid" id="productsGrid"></div>
-
-    <!-- Produktdetail Modal -->
+    <!-- Product Detail Modal -->
     <div class="modal" id="productModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div>
+            <button class="modal-close" onclick="closeProductModal()">×</button>
+            <div class="modal-body">
+                <div class="modal-image-section">
+                    <img id="modalProductImage" class="modal-product-image" src="" alt="">
+                </div>
+                <div class="modal-info-section">
+                    <div class="modal-manufacturer" id="modalManufacturer"></div>
                     <h2 id="modalProductName"></h2>
-                    <p id="modalProductManufacturer"></p>
-                </div>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-price" id="modalProductPrice"></div>
+                    <div class="modal-price" id="modalProductPrice"></div>
 
-                <div class="variant-selector">
-                    <label for="colorSelect">Farbe wählen:</label>
-                    <select id="colorSelect" onchange="updateSizeTable()">
-                        <option value="">Bitte wählen...</option>
-                    </select>
-                </div>
+                    <div class="variant-selector">
+                        <label for="colorSelect">Farbe wählen:</label>
+                        <select id="colorSelect" onchange="updateProductImage()">
+                            <option value="">Bitte wählen...</option>
+                        </select>
+                    </div>
 
-                <div id="sizeTableContainer" style="display: none;">
-                    <h3>Größen & Menge:</h3>
-                    <table class="size-quantity-table">
-                        <thead>
-                            <tr>
-                                <th>Größe</th>
-                                <th>Menge</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sizeTableBody"></tbody>
-                    </table>
-                </div>
+                    <div class="size-table" id="sizeTableContainer" style="display: none;">
+                        <label>Größen & Mengen:</label>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Größe</th>
+                                    <th>Menge</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sizeTableBody">
+                            </tbody>
+                        </table>
+                    </div>
 
-                <button class="add-to-cart-btn" onclick="addToCart()">Zum Anfragekorb hinzufügen</button>
+                    <button class="add-to-cart-btn" onclick="addToCart()">Zum Anfragekorb hinzufügen</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Anfragekorb Float Button -->
-    <div class="cart-float-btn" onclick="toggleCart()">
-        🛒 Anfragekorb <span class="cart-badge" id="cartBadge">0</span>
-    </div>
-
-    <!-- Anfragekorb Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h2>Anfragekorb</h2>
-            <button class="modal-close" onclick="toggleCart()">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <p style="text-align: center; color: #999; padding: 2rem;">Ihr Anfragekorb ist leer</p>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                Gesamt: <span id="cartTotal">0,00 €</span>
-            </div>
-            <button class="submit-inquiry-btn" onclick="showInquiryForm()" id="submitInquiryBtn" disabled>
-                Anfrage absenden
-            </button>
-        </div>
-    </div>
-
-    <!-- Anfrageformular Modal -->
-    <div class="modal inquiry-form" id="inquiryFormModal">
+    <!-- Request Form Modal -->
+    <div class="modal" id="requestModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Anfrage absenden</h2>
-                <button class="modal-close" onclick="closeInquiryForm()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form onsubmit="submitInquiry(event)">
+            <button class="modal-close" onclick="closeRequestModal()">×</button>
+            <div class="request-form">
+                <h2 style="margin-bottom: var(--spacing-lg); color: var(--color-primary);">Anfrage absenden</h2>
+                <form id="requestForm" onsubmit="submitRequest(event)">
                     <div class="form-group">
                         <label for="customerName">Name *</label>
                         <input type="text" id="customerName" required>
@@ -587,190 +589,209 @@
                         <label for="customerMessage">Nachricht / Anmerkungen</label>
                         <textarea id="customerMessage"></textarea>
                     </div>
-                    <button type="submit" class="submit-inquiry-btn">Anfrage jetzt absenden</button>
+                    <button type="submit" class="submit-request-btn">Anfrage jetzt absenden</button>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Anfragekorb</h3>
+            <button class="cart-close" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">Ihr Anfragekorb ist leer</div>
+        </div>
+        <div class="cart-footer">
+            <button class="submit-request-btn" onclick="openRequestForm()">Anfrage starten</button>
+        </div>
+    </div>
+
+    <!-- Cart Float Button -->
+    <button class="cart-float-btn" onclick="toggleCart()">
+        🛒
+        <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+    </button>
+
     <script>
-        let allProducts = [];
+        let products = [];
         let groupedProducts = [];
         let cart = [];
         let currentProduct = null;
 
         // Excel-Datei laden
-        async function loadExcel() {
+        async function loadExcelData() {
             try {
                 const response = await fetch('Article_Export_2025-09_(EUR).xlsx');
-                if (!response.ok) {
-                    throw new Error('Datei nicht gefunden: Article_Export_2025-09_(EUR).xlsx');
-                }
                 const arrayBuffer = await response.arrayBuffer();
                 const workbook = XLSX.read(arrayBuffer, { type: 'array' });
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
-                // WICHTIG: Erste Zeile sind DATEN, keine Überschriften!
-                const columnNames = ['SKU', 'Style', 'Manufacturer', 'Name', 'Colour', 'Size', 'Farbtyp', 
-                                   'Groessentyp', 'UVP', 'Weight KG', 'Status', 'Packshot', 'EAN', 'Manufacturer SKU'];
+                // Alle Zeilen sind Daten (keine Header)
+                products = jsonData.map(row => ({
+                    SKU: row[0] || '',
+                    Name: row[1] || 'Unbekanntes Produkt',
+                    UVP: parseFloat(row[2]) || 0,
+                    EAN: row[3] || '',
+                    Packshot: row[4] || '',
+                    Colour: row[5] || '',
+                    Size: row[6] || '',
+                    Manufacturer: row[7] || 'Unbekannt',
+                    Status: row[8] || '',
+                    Weight_KG: row[9] || '',
+                    Style: row[10] || '',
+                    Farbtyp: row[11] || '',
+                    Groessentyp: row[12] || '',
+                    Manufacturer_SKU: row[13] || '',
+                    Kategorie: row[14] || 'Allgemein'
+                }));
 
-                allProducts = data.map(row => {
-                    const product = {};
-                    columnNames.forEach((col, index) => {
-                        product[col] = row[index];
-                    });
-                    return product;
-                }).filter(p => p.SKU && p.Name); // Nur gültige Produkte
-
-                groupProducts();
-                displayProducts(groupedProducts);
-                updateFilters();
-                document.getElementById('loadingMessage').style.display = 'none';
+                groupProductsByStyle();
+                populateFilters();
+                displayProducts();
             } catch (error) {
-                document.getElementById('loadingMessage').innerHTML = 
-                    `<div style="color: #d32f2f;">
-                        <h3>❌ Fehler beim Laden der Excel-Datei</h3>
-                        <p>${error.message}</p>
-                        <p>Bitte stellen Sie sicher, dass die Datei "Article_Export_2025-09_(EUR).xlsx" im selben Ordner liegt.</p>
-                    </div>`;
+                console.error('Fehler beim Laden der Daten:', error);
+                document.getElementById('productGrid').innerHTML = 
+                    '<p style="text-align: center; color: var(--color-text-light); grid-column: 1/-1;">Fehler beim Laden der Produktdaten. Bitte stellen Sie sicher, dass die Datei "Article_Export_2025-09_(EUR).xlsx" im gleichen Verzeichnis liegt.</p>';
             }
         }
 
-        // Produkte nach Style gruppieren
-        function groupProducts() {
+        function groupProductsByStyle() {
             const grouped = {};
-            allProducts.forEach(product => {
-                const style = product.Style || 'unknown';
-                if (!grouped[style]) {
-                    grouped[style] = {
-                        style: style,
+
+            products.forEach(product => {
+                const styleId = product.Style || product.SKU;
+
+                if (!grouped[styleId]) {
+                    grouped[styleId] = {
+                        style: styleId,
                         name: product.Name,
                         manufacturer: product.Manufacturer,
-                        category: product.Farbtyp || 'Allgemein',
-                        image: product.Packshot,
-                        price: product.UVP,
-                        variants: []
+                        category: product.Kategorie,
+                        variants: [],
+                        colors: new Set(),
+                        sizes: new Set(),
+                        minPrice: product.UVP,
+                        maxPrice: product.UVP,
+                        mainImage: product.Packshot
                     };
                 }
-                grouped[style].variants.push(product);
+
+                grouped[styleId].variants.push(product);
+                grouped[styleId].colors.add(product.Colour);
+                grouped[styleId].sizes.add(product.Size);
+                grouped[styleId].minPrice = Math.min(grouped[styleId].minPrice, product.UVP);
+                grouped[styleId].maxPrice = Math.max(grouped[styleId].maxPrice, product.UVP);
             });
-            groupedProducts = Object.values(grouped);
+
+            groupedProducts = Object.values(grouped).map(group => ({
+                ...group,
+                colors: Array.from(group.colors).filter(c => c),
+                sizes: Array.from(group.sizes).filter(s => s)
+            }));
         }
 
-        // Produkte anzeigen
-        function displayProducts(products) {
-            const grid = document.getElementById('productsGrid');
+        function populateFilters() {
+            const categories = [...new Set(products.map(p => p.Kategorie))].sort();
+            const manufacturers = [...new Set(products.map(p => p.Manufacturer))].sort();
 
-            if (products.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #999; padding: 3rem;">Keine Produkte gefunden</p>';
+            const categoryFilter = document.getElementById('categoryFilter');
+            const manufacturerFilter = document.getElementById('manufacturerFilter');
+
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categoryFilter.appendChild(option);
+            });
+
+            manufacturers.forEach(mfr => {
+                const option = document.createElement('option');
+                option.value = mfr;
+                option.textContent = mfr;
+                manufacturerFilter.appendChild(option);
+            });
+        }
+
+        function displayProducts(filtered = groupedProducts) {
+            const grid = document.getElementById('productGrid');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: var(--color-text-light); grid-column: 1/-1;">Keine Produkte gefunden.</p>';
                 return;
             }
 
-            grid.innerHTML = products.map(product => {
-                const colors = [...new Set(product.variants.map(v => v.Colour))];
-                const sizes = [...new Set(product.variants.map(v => v.Size))];
-                const imageUrl = product.image ? `img-products/${product.image}` : 'https://via.placeholder.com/300x300?text=Kein+Bild';
-
-                return `
-                    <div class="product-card" onclick="openProductDetail('${product.style}')">
-                        <img src="${imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300x300?text=Kein+Bild'">
-                        <div class="product-info">
-                            <div class="product-manufacturer">${product.manufacturer || 'Unbekannter Hersteller'}</div>
-                            <div class="product-name">${product.name || 'Unbekanntes Produkt'}</div>
-                            <div class="product-variants">${colors.length} Farben • ${sizes.length} Größen</div>
-                            <div class="product-price">${formatPrice(product.price)}</div>
+            grid.innerHTML = filtered.map(product => `
+                <div class="product-card" onclick='openProductModal(${JSON.stringify(product).replace(/'/g, "&apos;")})'>
+                    <img src="img-products/${product.mainImage}" 
+                         class="product-image" 
+                         alt="${product.name}"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Crect fill=\'%23f5f5f5\' width=\'300\' height=\'300\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\' font-family=\'Arial\' font-size=\'16\'%3EKein Bild%3C/text%3E%3C/svg%3E'">
+                    <div class="product-info">
+                        <div class="product-manufacturer">${product.manufacturer}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-variants">
+                            ${product.colors.length} Farben • ${product.sizes.length} Größen
+                        </div>
+                        <div class="product-price">
+                            ${product.minPrice.toFixed(2).replace('.', ',')} €
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         }
 
-        // Filter aktualisieren
-        function updateFilters() {
-            const categories = [...new Set(groupedProducts.map(p => p.category))].sort();
-            const manufacturers = [...new Set(groupedProducts.map(p => p.manufacturer))].sort();
+        function openProductModal(product) {
+            currentProduct = product;
 
-            document.getElementById('categoryFilter').innerHTML = 
-                '<option value="">Alle Kategorien</option>' +
-                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            document.getElementById('modalManufacturer').textContent = product.manufacturer;
+            document.getElementById('modalProductName').textContent = product.name;
+            document.getElementById('modalProductPrice').textContent = `${product.minPrice.toFixed(2).replace('.', ',')} €`;
+            document.getElementById('modalProductImage').src = `img-products/${product.mainImage}`;
 
-            document.getElementById('manufacturerFilter').innerHTML = 
-                '<option value="">Alle Hersteller</option>' +
-                manufacturers.map(man => `<option value="${man}">${man}</option>`).join('');
-        }
+            // Farb-Dropdown befüllen
+            const colorSelect = document.getElementById('colorSelect');
+            colorSelect.innerHTML = '<option value="">Bitte wählen...</option>' +
+                product.colors.map(color => `<option value="${color}">${color}</option>`).join('');
 
-        // Filter anwenden
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
-            const manufacturer = document.getElementById('manufacturerFilter').value;
-
-            const filtered = groupedProducts.filter(product => {
-                const matchesSearch = !searchTerm || 
-                    product.name.toLowerCase().includes(searchTerm) ||
-                    product.manufacturer.toLowerCase().includes(searchTerm) ||
-                    product.style.toLowerCase().includes(searchTerm);
-                const matchesCategory = !category || product.category === category;
-                const matchesManufacturer = !manufacturer || product.manufacturer === manufacturer;
-                return matchesSearch && matchesCategory && matchesManufacturer;
-            });
-
-            displayProducts(filtered);
-        }
-
-        document.getElementById('searchBox').addEventListener('input', applyFilters);
-        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
-        document.getElementById('manufacturerFilter').addEventListener('change', applyFilters);
-
-        // Produktdetails öffnen
-        function openProductDetail(style) {
-            currentProduct = groupedProducts.find(p => p.style === style);
-            if (!currentProduct) return;
-
-            document.getElementById('modalProductName').textContent = currentProduct.name;
-            document.getElementById('modalProductManufacturer').textContent = currentProduct.manufacturer;
-            document.getElementById('modalProductPrice').textContent = formatPrice(currentProduct.price);
-
-            // Farben-Dropdown füllen
-            const colors = [...new Set(currentProduct.variants.map(v => v.Colour))];
-            document.getElementById('colorSelect').innerHTML = 
-                '<option value="">Bitte wählen...</option>' +
-                colors.map(color => `<option value="${color}">${color}</option>`).join('');
-
+            // Größentabelle ausblenden
             document.getElementById('sizeTableContainer').style.display = 'none';
+
             document.getElementById('productModal').classList.add('active');
         }
 
-        // Größentabelle aktualisieren
-        function updateSizeTable() {
+        function updateProductImage() {
             const selectedColor = document.getElementById('colorSelect').value;
+
             if (!selectedColor) {
                 document.getElementById('sizeTableContainer').style.display = 'none';
                 return;
             }
 
-            // Verfügbare Größen für die gewählte Farbe
-            const sizes = currentProduct.variants
-                .filter(v => v.Colour === selectedColor)
-                .map(v => ({
-                    size: v.Size,
-                    sku: v.SKU
-                }));
+            // Finde Variante mit der gewählten Farbe und aktualisiere das Bild
+            const colorVariant = currentProduct.variants.find(v => v.Colour === selectedColor);
+            if (colorVariant && colorVariant.Packshot) {
+                document.getElementById('modalProductImage').src = `img-products/${colorVariant.Packshot}`;
+            }
 
-            const tableBody = document.getElementById('sizeTableBody');
-            tableBody.innerHTML = sizes.map(s => `
+            // Größentabelle anzeigen
+            const sizesForColor = currentProduct.variants
+                .filter(v => v.Colour === selectedColor)
+                .map(v => ({ size: v.Size, sku: v.SKU, price: v.UVP, variant: v }));
+
+            const sizeTableBody = document.getElementById('sizeTableBody');
+            sizeTableBody.innerHTML = sizesForColor.map(item => `
                 <tr>
-                    <td>${s.size}</td>
+                    <td><strong>${item.size}</strong></td>
                     <td>
-                        <input 
-                            type="number" 
-                            min="0" 
-                            value="0" 
-                            data-sku="${s.sku}"
-                            data-size="${s.size}"
-                            class="quantity-input"
-                        >
+                        <input type="number" 
+                               min="0" 
+                               value="0" 
+                               data-sku="${item.sku}" 
+                               class="size-quantity">
                     </td>
                 </tr>
             `).join('');
@@ -778,139 +799,160 @@
             document.getElementById('sizeTableContainer').style.display = 'block';
         }
 
-        // Zum Warenkorb hinzufügen
-        function addToCart() {
-            const selectedColor = document.getElementById('colorSelect').value;
-            if (!selectedColor) {
-                alert('Bitte wählen Sie zuerst eine Farbe!');
-                return;
-            }
-
-            const quantityInputs = document.querySelectorAll('.quantity-input');
-            let addedItems = 0;
-
-            quantityInputs.forEach(input => {
-                const quantity = parseInt(input.value) || 0;
-                if (quantity > 0) {
-                    const sku = input.dataset.sku;
-                    const size = input.dataset.size;
-                    const variant = currentProduct.variants.find(v => v.SKU === sku);
-
-                    cart.push({
-                        sku: sku,
-                        name: currentProduct.name,
-                        manufacturer: currentProduct.manufacturer,
-                        color: selectedColor,
-                        size: size,
-                        quantity: quantity,
-                        price: variant.UVP
-                    });
-                    addedItems++;
-                }
-            });
-
-            if (addedItems > 0) {
-                updateCart();
-                closeModal();
-                alert(`${addedItems} Artikel zum Anfragekorb hinzugefügt!`);
-            } else {
-                alert('Bitte geben Sie mindestens eine Menge ein!');
-            }
-        }
-
-        // Warenkorb aktualisieren
-        function updateCart() {
-            const cartItemsContainer = document.getElementById('cartItems');
-            const cartBadge = document.getElementById('cartBadge');
-            const cartTotal = document.getElementById('cartTotal');
-            const submitBtn = document.getElementById('submitInquiryBtn');
-
-            cartBadge.textContent = cart.length;
-
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">Ihr Anfragekorb ist leer</p>';
-                submitBtn.disabled = true;
-                cartTotal.textContent = '0,00 €';
-                return;
-            }
-
-            submitBtn.disabled = false;
-
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotal.textContent = formatPrice(total);
-
-            cartItemsContainer.innerHTML = cart.map((item, index) => `
-                <div class="cart-item">
-                    <div class="cart-item-header">
-                        <span class="cart-item-name">${item.name}</span>
-                        <button class="cart-item-remove" onclick="removeFromCart(${index})">&times;</button>
-                    </div>
-                    <div>${item.manufacturer}</div>
-                    <div>Farbe: ${item.color} | Größe: ${item.size}</div>
-                    <div>Menge: ${item.quantity} | ${formatPrice(item.price * item.quantity)}</div>
-                </div>
-            `).join('');
-        }
-
-        // Artikel entfernen
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCart();
-        }
-
-        // Anfrageformular anzeigen
-        function showInquiryForm() {
-            document.getElementById('inquiryFormModal').classList.add('active');
-        }
-
-        function closeInquiryForm() {
-            document.getElementById('inquiryFormModal').classList.remove('active');
-        }
-
-        // Anfrage absenden
-        function submitInquiry(event) {
-            event.preventDefault();
-
-            const customerData = {
-                name: document.getElementById('customerName').value,
-                email: document.getElementById('customerEmail').value,
-                phone: document.getElementById('customerPhone').value,
-                message: document.getElementById('customerMessage').value,
-                items: cart,
-                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            };
-
-            console.log('Anfrage-Daten:', customerData);
-
-            // Hier würde normalerweise die E-Mail-Versendung stattfinden
-            alert(`Vielen Dank für Ihre Anfrage, ${customerData.name}!\n\nWir haben ${cart.length} Positionen erhalten und werden uns schnellstmöglich bei Ihnen melden.`);
-
-            // Warenkorb leeren
-            cart = [];
-            updateCart();
-            closeInquiryForm();
-            toggleCart();
-        }
-
-        // Modal schließen
-        function closeModal() {
+        function closeProductModal() {
             document.getElementById('productModal').classList.remove('active');
             currentProduct = null;
         }
 
-        // Warenkorb ein/ausblenden
+        function addToCart() {
+            const selectedColor = document.getElementById('colorSelect').value;
+
+            if (!selectedColor) {
+                alert('Bitte wählen Sie eine Farbe aus.');
+                return;
+            }
+
+            const quantityInputs = document.querySelectorAll('.size-quantity');
+            let addedAny = false;
+
+            quantityInputs.forEach(input => {
+                const quantity = parseInt(input.value);
+                if (quantity > 0) {
+                    const sku = input.dataset.sku;
+                    const variant = currentProduct.variants.find(v => v.SKU === sku);
+
+                    if (variant) {
+                        cart.push({
+                            ...variant,
+                            quantity: quantity,
+                            productName: currentProduct.name
+                        });
+                        addedAny = true;
+                    }
+                }
+            });
+
+            if (addedAny) {
+                updateCartUI();
+                closeProductModal();
+                alert('Artikel wurden zum Anfragekorb hinzugefügt!');
+            } else {
+                alert('Bitte geben Sie mindestens eine Menge ein.');
+            }
+        }
+
+        function updateCartUI() {
+            const cartItems = document.getElementById('cartItems');
+            const cartBadge = document.getElementById('cartBadge');
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart">Ihr Anfragekorb ist leer</div>';
+                cartBadge.style.display = 'none';
+                return;
+            }
+
+            cartBadge.style.display = 'flex';
+            cartBadge.textContent = cart.length;
+
+            cartItems.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <img src="img-products/${item.Packshot}" 
+                         class="cart-item-image" 
+                         alt="${item.productName}"
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect fill=\'%23f5f5f5\' width=\'80\' height=\'80\'/%3E%3C/svg%3E'">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.productName}</div>
+                        <div class="cart-item-variant">${item.Colour} • ${item.Size}</div>
+                        <div class="cart-item-variant">Menge: ${item.quantity}</div>
+                        <div class="cart-item-variant">SKU: ${item.SKU}</div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${index})">Entfernen</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
         function toggleCart() {
             document.getElementById('cartSidebar').classList.toggle('active');
         }
 
-        // Preis formatieren
-        function formatPrice(price) {
-            if (!price) return '0,00 €';
-            return parseFloat(price).toFixed(2).replace('.', ',') + ' €';
+        function openRequestForm() {
+            if (cart.length === 0) {
+                alert('Ihr Anfragekorb ist leer. Bitte fügen Sie zuerst Artikel hinzu.');
+                return;
+            }
+            document.getElementById('requestModal').classList.add('active');
         }
 
-        // Excel beim Laden der Seite einlesen
-        window.addEventListener('DOMContentLoaded', loadExcel);
+        function closeRequestModal() {
+            document.getElementById('requestModal').classList.remove('active');
+        }
+
+        function submitRequest(event) {
+            event.preventDefault();
+
+            const requestData = {
+                customer: {
+                    name: document.getElementById('customerName').value,
+                    email: document.getElementById('customerEmail').value,
+                    phone: document.getElementById('customerPhone').value,
+                    message: document.getElementById('customerMessage').value
+                },
+                items: cart
+            };
+
+            console.log('Anfrage-Daten:', requestData);
+
+            // Hier später E-Mail-Versand implementieren
+            alert('Anfrage wurde erfolgreich gesendet!\n\nKundendaten:\nName: ' + requestData.customer.name + '\nE-Mail: ' + requestData.customer.email + '\n\nAnzahl Artikel: ' + cart.length);
+
+            // Korb leeren und Modals schließen
+            cart = [];
+            updateCartUI();
+            closeRequestModal();
+            toggleCart();
+            document.getElementById('requestForm').reset();
+        }
+
+        // Filter-Funktionen
+        document.getElementById('searchInput').addEventListener('input', filterProducts);
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('manufacturerFilter').addEventListener('change', filterProducts);
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const manufacturer = document.getElementById('manufacturerFilter').value;
+
+            const filtered = groupedProducts.filter(product => {
+                const matchesSearch = !searchTerm || 
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    product.manufacturer.toLowerCase().includes(searchTerm);
+
+                const matchesCategory = !category || product.category === category;
+                const matchesManufacturer = !manufacturer || product.manufacturer === manufacturer;
+
+                return matchesSearch && matchesCategory && matchesManufacturer;
+            });
+
+            displayProducts(filtered);
+        }
+
+        // Modal schließen bei Klick außerhalb
+        document.getElementById('productModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProductModal();
+        });
+
+        document.getElementById('requestModal').addEventListener('click', function(e) {
+            if (e.target === this) closeRequestModal();
+        });
+
+        // Daten beim Laden initialisieren
+        loadExcelData();
     </script>
 </body>
 </html>
