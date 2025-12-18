@@ -143,11 +143,10 @@
         .product-variants {
             color: var(--color-text-light);
             font-size: 0.9rem;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        /* Farbkreise */
-        .color-circles {
+        .product-colors {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
@@ -163,7 +162,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .color-circle:hover {
@@ -178,7 +177,7 @@
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
@@ -186,9 +185,8 @@
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s ease;
             margin-bottom: 5px;
-            z-index: 1000;
         }
 
         .color-circle:hover::after {
@@ -562,7 +560,7 @@
             <span class="modal-close" onclick="closeModal()">&times;</span>
             <div class="modal-body">
                 <div class="modal-image-section">
-                    <img id="modalImage" class="modal-product-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+                    <img id="modalImage" class="modal-product-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" alt="">
                 </div>
                 <div class="modal-info-section">
                     <div class="modal-manufacturer" id="modalManufacturer"></div>
@@ -627,126 +625,128 @@
         let currentProduct = null;
         let cart = [];
 
-        // Farbkonvertierung - erweiterte Farbtabelle
+        // Farb-Mapping erweitert
         const colorMap = {
             'black': '#000000',
             'white': '#FFFFFF',
-            'red': '#FF0000',
-            'blue': '#0000FF',
-            'navy': '#000080',
-            'royal': '#4169E1',
-            'green': '#008000',
-            'yellow': '#FFFF00',
-            'orange': '#FF8000',
-            'purple': '#800080',
-            'pink': '#FFC0CB',
+            'navy': '#001f3f',
+            'red': '#FF4136',
+            'orange': '#FF851B',
+            'blue': '#0074D9',
+            'royal blue': '#0047AB',
+            'light blue': '#87CEEB',
+            'sky blue': '#87CEEB',
+            'green': '#2ECC40',
+            'lime': '#32CD32',
+            'olive': '#3D9970',
+            'yellow': '#FFDC00',
+            'pink': '#FF69B4',
+            'fuchsia': '#F012BE',
+            'purple': '#B10DC9',
+            'maroon': '#85144b',
             'brown': '#8B4513',
-            'grey': '#808080',
-            'gray': '#808080',
+            'grey': '#AAAAAA',
+            'gray': '#AAAAAA',
+            'silver': '#DDDDDD',
             'beige': '#F5F5DC',
             'khaki': '#C3B091',
-            'olive': '#808000',
-            'lime': '#00FF00',
-            'aqua': '#00FFFF',
-            'teal': '#008080',
-            'maroon': '#800000',
-            'fuchsia': '#FF00FF',
-            'silver': '#C0C0C0',
-            'gold': '#FFD700',
-            'cyan': '#00FFFF',
-            'magenta': '#FF00FF',
-            'tan': '#D2B48C',
-            'lavender': '#E6E6FA',
-            'cream': '#FFFDD0',
             'burgundy': '#800020',
-            'charcoal': '#36454F',
-            'graphite': '#383428',
-            'mint': '#98FF98',
             'coral': '#FF7F50',
             'salmon': '#FA8072',
-            'peach': '#FFE5B4',
             'turquoise': '#40E0D0',
+            'teal': '#008080',
+            'aqua': '#00FFFF',
+            'denim': '#1560BD',
             'indigo': '#4B0082',
             'violet': '#EE82EE',
-            'sky': '#87CEEB',
-            'forest': '#228B22',
-            'emerald': '#50C878',
-            'azure': '#007FFF',
-            'crimson': '#DC143C',
-            'scarlet': '#FF2400',
-            'amber': '#FFBF00',
+            'gold': '#FFD700',
+            'charcoal': '#36454F',
+            'cream': '#FFFDD0',
             'ivory': '#FFFFF0',
-            'chocolate': '#D2691E',
-            'caramel': '#C68E17',
-            'coffee': '#6F4E37',
-            'sand': '#C2B280',
-            'stone': '#8D918D',
-            'slate': '#708090',
-            'copper': '#B87333',
-            'bronze': '#CD7F32',
-            'rust': '#B7410E',
-            'wine': '#722F37',
-            'plum': '#8E4585',
-            'mauve': '#E0B0FF',
-            'rose': '#FF007F',
-            'neon': '#39FF14',
-            'lemon': '#FFF44F',
-            'mustard': '#FFDB58',
-            'apricot': '#FBCEB1',
-            'raspberry': '#E30B5D',
-            'cherry': '#DE3163',
-            'bordeaux': '#6D071A',
-            'ash': '#B2BEB5',
-            'anthracite': '#293133',
-            'heather': '#B7C3D0',
-            'denim': '#1560BD',
-            'midnight': '#191970',
-            'cobalt': '#0047AB',
-            'ultramarine': '#4166F5',
-            'sapphire': '#0F52BA',
-            'steel': '#4682B4',
-            'pewter': '#96A8A1',
+            'tan': '#D2B48C',
+            'mint': '#98FF98',
             'sage': '#9DC183',
             'moss': '#8A9A5B',
+            'forest': '#228B22',
+            'chocolate': '#D2691E',
+            'rust': '#B7410E',
+            'copper': '#B87333',
+            'bronze': '#CD7F32',
+            'peach': '#FFE5B4',
+            'apricot': '#FBCEB1',
+            'lavender': '#E6E6FA',
+            'mauve': '#E0B0FF',
+            'plum': '#DDA0DD',
+            'magenta': '#FF00FF',
+            'rose': '#FF007F',
+            'crimson': '#DC143C',
+            'scarlet': '#FF2400',
+            'cherry': '#DE3163',
+            'wine': '#722F37',
+            'emerald': '#50C878',
             'jade': '#00A86B',
-            'pistachio': '#93C572',
-            'chartreuse': '#7FFF00',
-            'canary': '#FFEF00'
+            'azure': '#007FFF',
+            'cobalt': '#0047AB',
+            'sapphire': '#0F52BA',
+            'periwinkle': '#CCCCFF',
+            'slate': '#708090',
+            'steel': '#4682B4',
+            'pewter': '#8BA8B7',
+            'ash': '#B2BEB5',
+            'stone': '#928E85',
+            'sand': '#C2B280',
+            'taupe': '#483C32',
+            'camel': '#C19A6B',
+            'mustard': '#FFDB58',
+            'lemon': '#FFF700',
+            'lime green': '#32CD32',
+            'neon': '#39FF14'
         };
 
-        function getColorFromName(colorName) {
+        // Farbname in RGB konvertieren (mit Unterstützung für Multi-Farben wie "black/white")
+        function getColorRGB(colorName) {
             if (!colorName) return '#CCCCCC';
 
-            const name = colorName.toLowerCase().trim();
+            const lowerColor = colorName.toLowerCase().trim();
+
+            // Wenn Farbe "/" enthält, als Array zurückgeben
+            if (lowerColor.includes('/')) {
+                return lowerColor.split('/').map(c => {
+                    const trimmed = c.trim();
+                    return colorMap[trimmed] || findPartialColorMatch(trimmed) || '#CCCCCC';
+                });
+            }
 
             // Direkte Übereinstimmung
-            if (colorMap[name]) return colorMap[name];
-
-            // Zusammengesetzte Farben (z.B. "black/white") - nimm die erste
-            if (name.includes('/')) {
-                const firstColor = name.split('/')[0].trim();
-                if (colorMap[firstColor]) return colorMap[firstColor];
+            if (colorMap[lowerColor]) {
+                return colorMap[lowerColor];
             }
 
-            // Teilübereinstimmung
-            for (const [key, value] of Object.entries(colorMap)) {
-                if (name.includes(key)) return value;
-            }
-
-            return '#CCCCCC'; // Fallback: Grau
+            // Teilübereinstimmung suchen
+            return findPartialColorMatch(lowerColor) || '#CCCCCC';
         }
 
-        function createColorCircles(colors) {
-            if (!colors || colors.length === 0) return '';
+        function findPartialColorMatch(colorName) {
+            for (const [key, value] of Object.entries(colorMap)) {
+                if (colorName.includes(key) || key.includes(colorName)) {
+                    return value;
+                }
+            }
+            return null;
+        }
 
-            return colors.map(color => {
-                const rgb = getColorFromName(color);
-                const displayName = color.charAt(0).toUpperCase() + color.slice(1);
-                return `<div class="color-circle" 
-                            style="background-color: ${rgb};" 
-                            data-color="${displayName}"
-                            title="${displayName}"></div>`;
-            }).join('');
+        // Farb-Kreis HTML erstellen (mit Unterstützung für geteilte Farben)
+        function createColorCircle(colorName) {
+            const colors = getColorRGB(colorName);
+
+            // Wenn Array (mehrere Farben), geteilten Kreis erstellen
+            if (Array.isArray(colors)) {
+                const gradient = `linear-gradient(90deg, ${colors[0]} 50%, ${colors[1]} 50%)`;
+                return `<div class="color-circle" style="background: ${gradient};" data-color="${colorName}"></div>`;
+            }
+
+            // Einzelfarbe
+            return `<div class="color-circle" style="background-color: ${colors};" data-color="${colorName}"></div>`;
         }
 
         // Excel-Datei laden
@@ -800,9 +800,9 @@
                     name: variants[0].name,
                     uvp: variants[0].uvp,
                     packshot: variants[0].packshot,
-                    colors: colors,
                     colorCount: colors.length,
                     sizeCount: sizes.length,
+                    colors: colors,
                     variants: variants
                 };
             });
@@ -826,28 +826,33 @@
             const products = filteredProducts || groupedProducts;
             const grid = document.getElementById('productGrid');
 
-            grid.innerHTML = products.map(product => `
-                <div class="product-card" onclick="openProductModal('${product.style}')">
-                    <img src="img-products/${product.packshot}" 
-                         alt="${product.name}" 
-                         class="product-image"
-                         onerror="this.src='https://via.placeholder.com/300x250?text=Kein+Bild'">
-                    <div class="product-info">
-                        <div class="product-manufacturer">${product.manufacturer}</div>
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-variants">
-                            ${product.sizeCount} Größe${product.sizeCount !== 1 ? 'n' : ''}
+            grid.innerHTML = products.map(product => {
+                const colorCircles = product.colors.map(color => createColorCircle(color)).join('');
+
+                return `
+                    <div class="product-card" onclick="openProductModal('${product.style}')">
+                        <img src="img-products/${product.packshot}" 
+                             alt="${product.name}" 
+                             class="product-image"
+                             onerror="this.src='https://via.placeholder.com/300x250?text=Kein+Bild'">
+                        <div class="product-info">
+                            <div class="product-manufacturer">${product.manufacturer}</div>
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-variants">
+                                ${product.colorCount} Farbe${product.colorCount !== 1 ? 'n' : ''} • 
+                                ${product.sizeCount} Größe${product.sizeCount !== 1 ? 'n' : ''}
+                            </div>
+                            <div class="product-colors">
+                                ${colorCircles}
+                            </div>
+                            <div class="product-price">${product.uvp.toFixed(2)} €</div>
+                            <button class="btn" onclick="event.stopPropagation(); openProductModal('${product.style}')">
+                                Details ansehen
+                            </button>
                         </div>
-                        <div class="color-circles">
-                            ${createColorCircles(product.colors)}
-                        </div>
-                        <div class="product-price">${product.uvp.toFixed(2)} €</div>
-                        <button class="btn" onclick="event.stopPropagation(); openProductModal('${product.style}')">
-                            Details ansehen
-                        </button>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Produktdetails Modal öffnen
