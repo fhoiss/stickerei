@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOISS Produktkatalog</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #ef8006;
+            --color-primary-dark: #cc6f05;
+            --color-primary-light: #ff9a33;
+            --color-text-dark: #1a1a1a;
+            --color-text-medium: #4a4a4a;
+            --color-bg-light: #f5f5f5;
+            --color-border: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--color-bg-light);
+            color: var(--color-text-dark);
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: var(--color-primary);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.2rem;
+            color: var(--color-text-medium);
+        }
+
+        .loading-spinner {
+            border: 4px solid var(--color-border);
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 1rem;
+            margin: 2rem;
+            border-radius: 8px;
+            border: 1px solid #fcc;
+        }
+
+        .debug-info {
+            background: #f0f0f0;
+            padding: 1rem;
+            margin: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .filters {
+            padding: 1.5rem 2rem;
+            background: white;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-medium);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background: #f9f9f9;
+        }
+
+        .product-info {
+            padding: 1.25rem;
+        }
+
+        .product-manufacturer {
+            color: var(--color-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-dark);
+        }
+
+        .product-variants {
+            font-size: 0.85rem;
+            color: var(--color-text-medium);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--color-text-medium);
+            z-index: 10;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-header {
+            margin-bottom: 2rem;
+        }
+
+        .variant-selector {
+            margin-bottom: 2rem;
+        }
+
+        .variant-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .variant-selector select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        /* Größentabelle */
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .size-table th,
+        .size-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .size-table th {
+            background: var(--color-bg-light);
+            font-weight: 600;
+            color: var(--color-text-medium);
+        }
+
+        .size-table input[type="number"] {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* Anfragekorb Button */
+        .cart-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #c00;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .cart-items {
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-item {
+            background: var(--color-bg-light);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-remove {
+            background: #c00;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛍️ HOISS Produktkatalog</h1>
+        <p>Wählen Sie Ihre Produkte und starten Sie eine Anfrage</p>
+    </div>
+
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Lade Produktdaten aus Excel...</p>
+        <div id="debug-output" class="debug-info" style="display:none;"></div>
+    </div>
+
+    <div id="error" class="error-message" style="display:none;"></div>
+
+    <div id="app" style="display:none;">
+        <div class="filters">
+            <div class="filter-group">
+                <label>Suche</label>
+                <input type="text" id="search" placeholder="Produktname, Hersteller...">
+            </div>
+            <div class="filter-group">
+                <label>Hersteller</label>
+                <select id="manufacturer-filter">
+                    <option value="">Alle Hersteller</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="products" class="products-grid"></div>
+    </div>
+
+    <!-- Produkt Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Anfragekorb Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCartModal()">&times;</button>
+            <div class="modal-body">
+                <h2>Anfragekorb</h2>
+                <div id="cart-items" class="cart-items"></div>
+                <div id="cart-form" style="display:none;">
+                    <h3>Ihre Kontaktdaten</h3>
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" id="contact-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-Mail *</label>
+                        <input type="email" id="contact-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="contact-phone">
+                    </div>
+                    <div class="form-group">
+                        <label>Nachricht</label>
+                        <textarea id="contact-message" rows="4"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="submitInquiry()">Anfrage absenden</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="cart-button" onclick="openCartModal()">
+        🛒
+        <span id="cart-count" class="cart-badge" style="display:none;">0</span>
+    </button>
+
+    <script>
+        let allProducts = [];
+        let groupedProducts = [];
+        let cart = [];
+
+        // Debug-Funktion
+        function debug(message) {
+            const debugDiv = document.getElementById('debug-output');
+            debugDiv.style.display = 'block';
+            debugDiv.innerHTML += message + '\n';
+            console.log(message);
+        }
+
+        // Excel laden
+        async function loadExcel() {
+            try {
+                debug('Starte Excel-Laden...');
+
+                const response = await fetch('Article_Export_2025-09_(EUR).xlsx');
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+                }
+
+                debug('Excel-Datei geladen, lese Daten...');
+                const arrayBuffer = await response.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+
+                debug(`Workbook geladen. Sheets: ${workbook.SheetNames.join(', ')}`);
+
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                debug(`${jsonData.length} Zeilen gefunden`);
+
+                allProducts = jsonData;
+                processProducts();
+
+            } catch (error) {
+                debug(`FEHLER: ${error.message}`);
+                showError(`Fehler beim Laden der Excel-Datei: ${error.message}`);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function processProducts() {
+            debug('Verarbeite Produkte...');
+
+            // Nach Style gruppieren
+            const grouped = {};
+            allProducts.forEach(product => {
+                const style = product.Style;
+                if (!grouped[style]) {
+                    grouped[style] = [];
+                }
+                grouped[style].push(product);
+            });
+
+            debug(`${Object.keys(grouped).length} Produktgruppen erstellt`);
+
+            // Gruppierte Produkte erstellen
+            groupedProducts = Object.entries(grouped).map(([style, variants]) => {
+                const firstVariant = variants[0];
+                const colors = [...new Set(variants.map(v => v.Colour))];
+                const sizes = [...new Set(variants.map(v => v.Size))];
+
+                return {
+                    style: style,
+                    name: firstVariant.Name,
+                    manufacturer: firstVariant.Manufacturer,
+                    image: firstVariant.Packshot,
+                    colors: colors,
+                    sizes: sizes,
+                    variants: variants,
+                    variantCount: variants.length
+                };
+            });
+
+            debug(`${groupedProducts.length} Produkte zur Anzeige bereit`);
+
+            renderProducts();
+            populateFilters();
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+        }
+
+        function renderProducts(filtered = groupedProducts) {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
+
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => openProductModal(product);
+
+                const imgSrc = product.image ? `img-products/${product.image}` : 'https://via.placeholder.com/280x250?text=Kein+Bild';
+
+                card.innerHTML = `
+                    <img src="${imgSrc}" alt="${product.name}" class="product-image" 
+                         onerror="this.src='https://via.placeholder.com/280x250?text=Kein+Bild'">
+                    <div class="product-info">
+                        <div class="product-manufacturer">${product.manufacturer}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-variants">
+                            ${product.colors.length} ${product.colors.length === 1 ? 'Farbe' : 'Farben'} • 
+                            ${product.sizes.length} ${product.sizes.length === 1 ? 'Größe' : 'Größen'}
+                        </div>
+                        <div class="product-price">ab ${product.variants[0].UVP.toFixed(2)} €</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function populateFilters() {
+            const manufacturers = [...new Set(groupedProducts.map(p => p.manufacturer))].sort();
+            const select = document.getElementById('manufacturer-filter');
+
+            manufacturers.forEach(manufacturer => {
+                const option = document.createElement('option');
+                option.value = manufacturer;
+                option.textContent = manufacturer;
+                select.appendChild(option);
+            });
+        }
+
+        // Filter-Event-Listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search');
+            const manufacturerFilter = document.getElementById('manufacturer-filter');
+
+            function applyFilters() {
+                let filtered = groupedProducts;
+
+                const searchTerm = searchInput.value.toLowerCase();
+                if (searchTerm) {
+                    filtered = filtered.filter(p => 
+                        p.name.toLowerCase().includes(searchTerm) ||
+                        p.manufacturer.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                const manufacturer = manufacturerFilter.value;
+                if (manufacturer) {
+                    filtered = filtered.filter(p => p.manufacturer === manufacturer);
+                }
+
+                renderProducts(filtered);
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            manufacturerFilter.addEventListener('change', applyFilters);
+        });
+
+        // Produkt Modal
+        let currentProduct = null;
+        let selectedColor = null;
+
+        function openProductModal(product) {
+            currentProduct = product;
+            selectedColor = product.colors[0];
+
+            const modal = document.getElementById('product-modal');
+            const modalBody = document.getElementById('modal-body');
+
+            const imgSrc = product.image ? `img-products/${product.image}` : 'https://via.placeholder.com/400x300?text=Kein+Bild';
+
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="product-manufacturer">${product.manufacturer}</div>
+                    <h2>${product.name}</h2>
+                    <p class="product-variants">Style: ${product.style}</p>
+                </div>
+
+                <img src="${imgSrc}" alt="${product.name}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:2rem;"
+                     onerror="this.src='https://via.placeholder.com/400x300?text=Kein+Bild'">
+
+                <div class="variant-selector">
+                    <label>Farbe wählen</label>
+                    <select id="color-select" onchange="updateSizeTable()">
+                        ${product.colors.map(color => 
+                            `<option value="${color}">${color}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+
+                <div id="size-table-container"></div>
+
+                <button class="btn btn-primary" onclick="addToCart()">Zum Anfragekorb hinzufügen</button>
+            `;
+
+            modal.classList.add('active');
+            updateSizeTable();
+        }
+
+        function updateSizeTable() {
+            selectedColor = document.getElementById('color-select').value;
+
+            const variantsForColor = currentProduct.variants.filter(v => v.Colour === selectedColor);
+            const sizes = [...new Set(variantsForColor.map(v => v.Size))];
+
+            const container = document.getElementById('size-table-container');
+            container.innerHTML = `
+                <table class="size-table">
+                    <thead>
+                        <tr>
+                            <th>Größe</th>
+                            <th>UVP</th>
+                            <th>Menge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sizes.map(size => {
+                            const variant = variantsForColor.find(v => v.Size === size);
+                            return `
+                                <tr>
+                                    <td><strong>${size}</strong></td>
+                                    <td>${variant.UVP.toFixed(2)} €</td>
+                                    <td><input type="number" min="0" value="0" data-sku="${variant.SKU}" data-size="${size}" data-price="${variant.UVP}" class="quantity-input"></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('active');
+        }
+
+        function addToCart() {
+            const inputs = document.querySelectorAll('.quantity-input');
+            let addedCount = 0;
+
+            inputs.forEach(input => {
+                const quantity = parseInt(input.value);
+                if (quantity > 0) {
+                    const sku = input.dataset.sku;
+                    const size = input.dataset.size;
+                    const price = parseFloat(input.dataset.price);
+
+                    cart.push({
+                        product: currentProduct.name,
+                        manufacturer: currentProduct.manufacturer,
+                        color: selectedColor,
+                        size: size,
+                        quantity: quantity,
+                        price: price,
+                        sku: sku
+                    });
+
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                updateCartBadge();
+                closeProductModal();
+                alert(`${addedCount} Position(en) zum Anfragekorb hinzugefügt!`);
+            } else {
+                alert('Bitte wählen Sie mindestens eine Größe mit Menge > 0');
+            }
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-count');
+            if (cart.length > 0) {
+                badge.textContent = cart.length;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Warenkorb Modal
+        function openCartModal() {
+            const modal = document.getElementById('cart-modal');
+            const itemsContainer = document.getElementById('cart-items');
+            const formContainer = document.getElementById('cart-form');
+
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '<p>Ihr Anfragekorb ist leer.</p>';
+                formContainer.style.display = 'none';
+            } else {
+                itemsContainer.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.manufacturer} - ${item.product}</strong><br>
+                            Farbe: ${item.color} | Größe: ${item.size} | Menge: ${item.quantity}<br>
+                            <small>SKU: ${item.sku} | ${item.price.toFixed(2)} € / Stk.</small>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart(${index})">✕</button>
+                    </div>
+                `).join('');
+                formContainer.style.display = 'block';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.remove('active');
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartBadge();
+            openCartModal();
+        }
+
+        function submitInquiry() {
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const phone = document.getElementById('contact-phone').value;
+            const message = document.getElementById('contact-message').value;
+
+            if (!name || !email) {
+                alert('Bitte füllen Sie Name und E-Mail aus.');
+                return;
+            }
+
+            const inquiry = {
+                contact: { name, email, phone, message },
+                items: cart,
+                date: new Date().toISOString()
+            };
+
+            console.log('Anfrage:', inquiry);
+            alert('Anfrage wurde erfolgreich versendet! (In Produktion wird hier eine E-Mail versendet)');
+
+            cart = [];
+            updateCartBadge();
+            closeCartModal();
+        }
+
+        // Excel beim Laden der Seite laden
+        loadExcel();
+    </script>
+</body>
+</html>
