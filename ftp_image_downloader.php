@@ -7,10 +7,10 @@
 // ========================================
 // KONFIGURATION - Hier deine Daten eintragen
 // ========================================
-$ftp_server = 'service.cottonclassics.com';  // z.B. 'ftp.example.com'
+$ftp_server = '';  // z.B. 'ftp.example.com'
 $ftp_port = 21;
-$ftp_username = 'ccuser2';
-$ftp_password = 'cottonclassicsALLE!';
+$ftp_username = '';
+$ftp_password = '';
 $excel_file = 'Producte-Hoiss-Stickerei.xlsx';
 $image_folder = 'img-products';
 $ftp_base_path = '/picture_db';  // Basispfad auf dem FTP-Server
