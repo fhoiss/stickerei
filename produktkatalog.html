@@ -483,174 +483,41 @@
             }
         }
     
-        .color-display {
+        .color-swatches {
             display: flex;
+            gap: 4px;
+            margin-top: 6px;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 8px;
+            align-items: center;
         }
 
-        .color-circle {
-            width: 24px;
-            height: 24px;
+        .color-swatch {
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            border: 2px solid #ddd;
+            border: 1px solid #ddd;
             cursor: help;
             transition: transform 0.2s ease;
-            position: relative;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .color-circle:hover {
-            transform: scale(1.4);
-            z-index: 10;
+        .color-swatch:hover {
+            transform: scale(1.3);
             border-color: var(--color-primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 10;
         }
 
-        .color-circle::after {
-            content: attr(data-color-name);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            white-space: nowrap;
+        .color-more {
             font-size: 11px;
-            margin-bottom: 5px;
-            z-index: 100;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
+            color: var(--color-text-light);
+            padding: 2px 6px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            cursor: help;
         }
 
-        .color-circle:hover::after {
-            opacity: 1;
-        }
-
-    </style>
-
-    <script>
-    // Farbnamen zu RGB Mapping
-    function colorNameToRGB(colorName) {
-        const colorMap = {
-            // Basis-Farben
-            'white': '#FFFFFF', 'black': '#000000', 'red': '#DC143C', 'blue': '#0000FF',
-            'green': '#008000', 'yellow': '#FFFF00', 'orange': '#FFA500', 'purple': '#800080',
-            'pink': '#FFC0CB', 'brown': '#8B4513', 'grey': '#808080', 'gray': '#808080',
-
-            // Navy & Royal
-            'navy': '#000080', 'royal': '#4169E1', 'royal blue': '#4169E1',
-
-            // Blautöne
-            'light blue': '#ADD8E6', 'dark blue': '#00008B', 'sky blue': '#87CEEB',
-            'cobalt': '#0047AB', 'azure': '#007FFF', 'aqua': '#00FFFF', 
-            'teal': '#008080', 'cyan': '#00FFFF', 'denim': '#1560BD',
-            'turquoise': '#40E0D0', 'atlantic': '#006994', 'ocean': '#0077BE',
-
-            // Grüntöne
-            'light green': '#90EE90', 'dark green': '#006400', 'forest green': '#228B22',
-            'emerald': '#50C878', 'mint': '#98FF98', 'sage': '#9DC183', 
-            'bottle green': '#006A4E', 'lime': '#00FF00', 'olive': '#808000',
-            'khaki': '#F0E68C',
-
-            // Grautöne
-            'light grey': '#D3D3D3', 'dark grey': '#A9A9A9', 'anthracite': '#2D2D2D',
-            'silver': '#C0C0C0', 'ash': '#B2BEB5', 'slate': '#708090', 
-            'steel': '#4682B4', 'charcoal': '#36454F', 'graphite': '#383428',
-
-            // Rottöne
-            'light red': '#FF6B6B', 'dark red': '#8B0000', 'crimson': '#DC143C',
-            'scarlet': '#FF2400', 'cherry': '#DE3163', 'wine': '#722F37', 
-            'burgundy': '#800020', 'maroon': '#800000', 'cardinal': '#C41E3A',
-
-            // Gelbtöne
-            'light yellow': '#FFFFE0', 'gold': '#FFD700', 'mustard': '#FFDB58',
-            'lemon': '#FFF44F', 'amber': '#FFBF00', 'canary': '#FFFF99',
-
-            // Orangetöne
-            'light orange': '#FFA07A', 'dark orange': '#FF8C00', 'coral': '#FF7F50',
-            'peach': '#FFE5B4', 'apricot': '#FBCEB1',
-
-            // Pinktöne
-            'light pink': '#FFB6C1', 'hot pink': '#FF69B4', 'fuchsia': '#FF00FF',
-            'magenta': '#FF00FF', 'rose': '#FF007F', 'blush': '#DE5D83',
-
-            // Brauntöne
-            'light brown': '#B5651D', 'dark brown': '#654321', 'chocolate': '#D2691E',
-            'coffee': '#6F4E37', 'tan': '#D2B48C', 'camel': '#C19A6B', 
-            'sand': '#C2B280', 'beige': '#F5F5DC',
-
-            // Violett/Lila
-            'violet': '#8F00FF', 'lavender': '#E6E6FA', 'lilac': '#C8A2C8', 
-            'plum': '#DDA0DD', 'mauve': '#E0B0FF', 'indigo': '#4B0082',
-
-            // Spezial-Farben
-            'cream': '#FFFDD0', 'ivory': '#FFFFF0', 'ecru': '#C2B280', 
-            'taupe': '#483C32', 'stone': '#928E85', 'natural': '#F5F5DC', 
-            'off white': '#FAF9F6', 'heather': '#B7C3D0', 'melange': '#9FA0A2',
-
-            // Neon/Fluoreszent
-            'neon': '#39FF14', 'fluorescent': '#CCFF00', 'fluo': '#CCFF00',
-            'hi vis yellow': '#FFFF00', 'hi vis orange': '#FF6600',
-
-            // Camo
-            'camo': '#78866B', 'camouflage': '#78866B', 'military': '#5F7A61'
-        };
-
-        // Normalisierung
-        const normalized = colorName.toLowerCase().trim();
-
-        // Direkte Übereinstimmung
-        if (colorMap[normalized]) {
-            return colorMap[normalized];
-        }
-
-        // Teilweise Übereinstimmung
-        for (let key in colorMap) {
-            if (normalized.includes(key)) {
-                return colorMap[key];
-            }
-        }
-
-        // Fallback: Generiere Farbe aus Hash
-        let hash = 0;
-        for (let i = 0; i < normalized.length; i++) {
-            hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const hue = Math.abs(hash) % 360;
-        return `hsl(${hue}, 65%, 50%)`;
-    }
-
-    // Funktion zum Rendern der Farbkreise
-    function renderColorCircles(colorsText) {
-        if (!colorsText) return '<div class="info-item">Keine Farben</div>';
-
-        const colors = colorsText.split(',').map(c => c.trim()).filter(c => c.length > 0);
-        const uniqueColors = [...new Set(colors)];
-
-        let html = '<div class="color-display">';
-        const maxDisplay = 8;
-        uniqueColors.slice(0, maxDisplay).forEach(colorName => {
-            const rgbColor = colorNameToRGB(colorName);
-            html += `<div class="color-circle" 
-                         style="background-color: ${rgbColor};" 
-                         data-color-name="${colorName}"
-                         title="${colorName}"></div>`;
-        });
-        html += '</div>';
-
-        if (uniqueColors.length > maxDisplay) {
-            html += `<div class="info-item" style="font-size: 11px; color: #999;">+${uniqueColors.length - maxDisplay} weitere</div>`;
-        }
-
-        return html;
-    }
-    </script>
-
+</style>
 </head>
 <body>
     <header>
@@ -1032,6 +899,98 @@
 
         // Initialisierung
         loadExcelData();
-    </script>
+    
+        // Erweiterte Farbkonvertierung
+        function colorNameToHex(colorName) {
+            const colorMap = {
+                // Basischfarben
+                'white': '#FFFFFF', 'black': '#000000', 'red': '#DC143C', 'blue': '#0000FF', 
+                'green': '#008000', 'yellow': '#FFFF00', 'orange': '#FFA500', 'purple': '#800080',
+                'pink': '#FFC0CB', 'brown': '#8B4513', 'grey': '#808080', 'gray': '#808080',
+
+                // Navy & Blau-Töne
+                'navy': '#000080', 'french navy': '#000080', 'dark navy': '#00004d',
+                'royal blue': '#4169E1', 'royal': '#4169E1', 'sky blue': '#87CEEB', 
+                'light blue': '#ADD8E6', 'baby blue': '#89CFF0', 'turquoise': '#40E0D0',
+                'teal': '#008080', 'aqua': '#00FFFF', 'cyan': '#00FFFF',
+                'cobalt': '#0047AB', 'azure': '#007FFF', 'electric blue': '#7DF9FF',
+                'bright blue': '#0096FF', 'powder blue': '#B0E0E6', 'steel blue': '#4682B4',
+                'midnight blue': '#191970', 'indigo': '#4B0082', 'sapphire': '#0F52BA',
+
+                // Grün-Töne
+                'bottle green': '#006A4E', 'forest green': '#228B22', 'olive': '#808000',
+                'lime green': '#32CD32', 'lime': '#00FF00', 'kelly green': '#4CBB17',
+                'mint': '#3EB489', 'emerald': '#50C878', 'sage': '#87AE73',
+                'army green': '#4B5320', 'dark green': '#006400', 'pine green': '#01796F',
+
+                // Rot & Rot-Töne
+                'burgundy': '#800020', 'wine': '#722F37', 'maroon': '#800000',
+                'crimson': '#DC143C', 'scarlet': '#FF2400', 'cardinal': '#C41E3A',
+                'cherry': '#DE3163', 'ruby': '#E0115F', 'rose': '#FF007F',
+                'coral': '#FF7F50', 'salmon': '#FA8072', 'tomato': '#FF6347',
+
+                // Gelb & Orange-Töne
+                'gold': '#FFD700', 'mustard': '#FFDB58', 'lemon': '#FFF44F',
+                'sunflower': '#FFDA03', 'amber': '#FFBF00', 'peach': '#FFE5B4',
+                'apricot': '#FBCEB1', 'tangerine': '#F28500', 'pumpkin': '#FF7518',
+                'rust': '#B7410E', 'burnt orange': '#CC5500',
+
+                // Grau-Töne
+                'heather grey': '#B6B6B4', 'dark grey': '#A9A9A9', 'charcoal': '#36454F',
+                'light grey': '#D3D3D3', 'silver': '#C0C0C0', 'slate': '#708090',
+                'graphite': '#383428', 'anthracite': '#293133', 'ash': '#B2BEB5',
+                'grey melange': '#9E9E9E', 'carbon': '#2C2C2C',
+
+                // Braun-Töne
+                'chocolate': '#7B3F00', 'coffee': '#6F4E37', 'tan': '#D2B48C',
+                'beige': '#F5F5DC', 'camel': '#C19A6B', 'khaki': '#C3B091',
+                'sand': '#C2B280', 'taupe': '#483C32', 'mocha': '#967969',
+
+                // Violett & Lila-Töne
+                'violet': '#8F00FF', 'lavender': '#E6E6FA', 'lilac': '#C8A2C8',
+                'magenta': '#FF00FF', 'fuchsia': '#FF00FF', 'plum': '#DDA0DD',
+                'mauve': '#E0B0FF',
+
+                // Spezielle & gemischte Farben
+                'natural': '#F5F5DC', 'cream': '#FFFDD0', 'ivory': '#FFFFF0',
+                'off white': '#FAF9F6', 'ecru': '#C2B280', 'stone': '#928E85',
+                'denim': '#1560BD', 'camo': '#78866B', 'camouflage': '#78866B',
+
+                // Neon & Helle Farben  
+                'neon green': '#39FF14', 'neon pink': '#FF10F0', 'neon yellow': '#FFFF00',
+                'neon orange': '#FF6600', 'fluorescent orange': '#FF5F00',
+                'fluorescent yellow': '#CCFF00', 'fluorescent pink': '#FF1493',
+                'hi vis yellow': '#FFFF00', 'hi vis orange': '#FF6600'
+            };
+
+            // Normalisiere den Farbnamen
+            let normalized = colorName.toLowerCase().trim();
+
+            // Direkte Übereinstimmung
+            if (colorMap[normalized]) {
+                return colorMap[normalized];
+            }
+
+            // Versuche Teilübereinstimmungen für zusammengesetzte Farben
+            // z.B. "black/white" → nehme "black"
+            if (normalized.includes('/')) {
+                const firstColor = normalized.split('/')[0].trim();
+                if (colorMap[firstColor]) {
+                    return colorMap[firstColor];
+                }
+            }
+
+            // Versuche Wortteilübereinstimmung
+            for (const [key, value] of Object.entries(colorMap)) {
+                if (normalized.includes(key) || key.includes(normalized.split(' ')[0])) {
+                    return value;
+                }
+            }
+
+            // Fallback zu Grau
+            return '#999999';
+        }
+
+</script>
 </body>
 </html>
