@@ -146,7 +146,7 @@
             margin-bottom: 15px;
         }
 
-        .product-colors {
+        .color-circles {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
@@ -162,7 +162,6 @@
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .color-circle:hover {
@@ -171,13 +170,12 @@
             z-index: 10;
         }
 
-        .color-circle::after {
-            content: attr(data-color);
+        .color-circle-tooltip {
             position: absolute;
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             color: white;
             padding: 4px 8px;
             border-radius: 4px;
@@ -185,11 +183,11 @@
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.2s;
             margin-bottom: 5px;
         }
 
-        .color-circle:hover::after {
+        .color-circle:hover .color-circle-tooltip {
             opacity: 1;
         }
 
@@ -217,6 +215,14 @@
             background: var(--color-primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(239, 128, 6, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
         }
 
         /* Modal Styles */
@@ -291,6 +297,8 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            background: white;
+            object-fit: contain;
         }
 
         .modal-info-section h2 {
@@ -469,8 +477,9 @@
         .cart-item img {
             width: 80px;
             height: 80px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 6px;
+            background: white;
         }
 
         .cart-item-info h4 {
@@ -506,6 +515,92 @@
             color: var(--color-text-light);
         }
 
+        /* Kontaktformular */
+        .contact-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-text-dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(239, 128, 6, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .inquiry-summary {
+            background: var(--color-bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .inquiry-summary h3 {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+        }
+
+        .inquiry-item {
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inquiry-item-details {
+            flex: 1;
+        }
+
+        .inquiry-item-details strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .inquiry-item-details small {
+            color: var(--color-text-medium);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .form-actions button {
+            flex: 1;
+        }
+
         @media (max-width: 768px) {
             .filters {
                 grid-template-columns: 1fr;
@@ -527,6 +622,14 @@
 
             h1 {
                 font-size: 1.8rem;
+            }
+
+            .contact-form-container {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -595,6 +698,57 @@
         </div>
     </div>
 
+    <!-- Kontaktformular Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeContactModal()">&times;</span>
+            <div class="contact-form-container">
+                <h2 style="color: var(--color-primary); margin-bottom: 30px;">📧 Anfrageformular</h2>
+
+                <div class="inquiry-summary" id="inquirySummary">
+                    <h3>Ihre ausgewählten Artikel:</h3>
+                    <div id="inquiryItemsList"></div>
+                </div>
+
+                <form id="contactForm" onsubmit="submitContactForm(event)">
+                    <div class="form-group">
+                        <label for="contactName">Name *</label>
+                        <input type="text" id="contactName" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactEmail">E-Mail *</label>
+                        <input type="email" id="contactEmail" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactPhone">Telefon</label>
+                        <input type="tel" id="contactPhone" name="phone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactCompany">Firma</label>
+                        <input type="text" id="contactCompany" name="company">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactMessage">Nachricht / Anmerkungen</label>
+                        <textarea id="contactMessage" name="message" placeholder="Teilen Sie uns mit, wenn Sie besondere Wünsche haben..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeContactModal()">
+                            Zurück zum Warenkorb
+                        </button>
+                        <button type="submit" class="btn">
+                            Anfrage absenden
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Anfragekorb Button -->
     <div class="cart-button" onclick="toggleCart()">
         🛒
@@ -613,8 +767,8 @@
             </div>
         </div>
         <div class="cart-footer">
-            <button class="btn" onclick="submitInquiry()" style="width: 100%;">
-                Anfrage absenden
+            <button class="btn" onclick="openContactForm()" style="width: 100%;">
+                Zur Anfrage
             </button>
         </div>
     </div>
@@ -625,128 +779,137 @@
         let currentProduct = null;
         let cart = [];
 
-        // Farb-Mapping erweitert
+        // Farbzuordnung
         const colorMap = {
             'black': '#000000',
             'white': '#FFFFFF',
-            'navy': '#001f3f',
-            'red': '#FF4136',
-            'orange': '#FF851B',
-            'blue': '#0074D9',
-            'royal blue': '#0047AB',
-            'light blue': '#87CEEB',
-            'sky blue': '#87CEEB',
-            'green': '#2ECC40',
-            'lime': '#32CD32',
-            'olive': '#3D9970',
-            'yellow': '#FFDC00',
+            'navy': '#000080',
+            'navy blue': '#000080',
+            'red': '#DC143C',
+            'orange': '#FF8C00',
+            'blue': '#4169E1',
+            'royal blue': '#4169E1',
+            'green': '#228B22',
+            'yellow': '#FFD700',
             'pink': '#FF69B4',
-            'fuchsia': '#F012BE',
-            'purple': '#B10DC9',
-            'maroon': '#85144b',
+            'purple': '#800080',
             'brown': '#8B4513',
-            'grey': '#AAAAAA',
-            'gray': '#AAAAAA',
-            'silver': '#DDDDDD',
+            'grey': '#808080',
+            'gray': '#808080',
             'beige': '#F5F5DC',
             'khaki': '#C3B091',
+            'olive': '#808000',
             'burgundy': '#800020',
+            'maroon': '#800000',
             'coral': '#FF7F50',
             'salmon': '#FA8072',
             'turquoise': '#40E0D0',
-            'teal': '#008080',
-            'aqua': '#00FFFF',
             'denim': '#1560BD',
-            'indigo': '#4B0082',
-            'violet': '#EE82EE',
+            'lime': '#00FF00',
             'gold': '#FFD700',
+            'silver': '#C0C0C0',
+            'bronze': '#CD7F32',
             'charcoal': '#36454F',
             'cream': '#FFFDD0',
-            'ivory': '#FFFFF0',
-            'tan': '#D2B48C',
             'mint': '#98FF98',
-            'sage': '#9DC183',
+            'lavender': '#E6E6FA',
+            'sage': '#87AE73',
             'moss': '#8A9A5B',
-            'forest': '#228B22',
-            'chocolate': '#D2691E',
-            'rust': '#B7410E',
-            'copper': '#B87333',
-            'bronze': '#CD7F32',
+            'teal': '#008080',
+            'aqua': '#00FFFF',
+            'indigo': '#4B0082',
+            'violet': '#8F00FF',
+            'magenta': '#FF00FF',
+            'tan': '#D2B48C',
+            'sand': '#C2B280',
+            'ivory': '#FFFFF0',
             'peach': '#FFE5B4',
             'apricot': '#FBCEB1',
-            'lavender': '#E6E6FA',
-            'mauve': '#E0B0FF',
-            'plum': '#DDA0DD',
-            'magenta': '#FF00FF',
-            'rose': '#FF007F',
-            'crimson': '#DC143C',
-            'scarlet': '#FF2400',
-            'cherry': '#DE3163',
-            'wine': '#722F37',
+            'rust': '#B7410E',
+            'chocolate': '#7B3F00',
+            'coffee': '#6F4E37',
+            'caramel': '#FFD59A',
+            'copper': '#B87333',
             'emerald': '#50C878',
             'jade': '#00A86B',
-            'azure': '#007FFF',
-            'cobalt': '#0047AB',
+            'ruby': '#E0115F',
             'sapphire': '#0F52BA',
-            'periwinkle': '#CCCCFF',
+            'graphite': '#383428',
             'slate': '#708090',
-            'steel': '#4682B4',
-            'pewter': '#8BA8B7',
+            'steel': '#B0C4DE',
             'ash': '#B2BEB5',
-            'stone': '#928E85',
-            'sand': '#C2B280',
-            'taupe': '#483C32',
-            'camel': '#C19A6B',
-            'mustard': '#FFDB58',
+            'pearl': '#F0EAD6',
+            'smoke': '#738276',
+            'vanilla': '#F3E5AB',
             'lemon': '#FFF700',
-            'lime green': '#32CD32',
-            'neon': '#39FF14'
+            'mustard': '#FFDB58',
+            'honey': '#EB9605',
+            'amber': '#FFBF00',
+            'citrus': '#9FA91F',
+            'cherry': '#DE3163',
+            'wine': '#722F37',
+            'plum': '#8E4585',
+            'berry': '#8F021C',
+            'grape': '#6F2DA8',
+            'blueberry': '#4F86F7',
+            'sky': '#87CEEB',
+            'ocean': '#006994',
+            'sea': '#2E8B57',
+            'forest': '#228B22',
+            'pine': '#01796F',
+            'grass': '#7CFC00',
+            'fuchsia': '#FF00FF',
+            'rose': '#FF007F',
+            'scarlet': '#FF2400',
+            'crimson': '#DC143C'
         };
 
-        // Farbname in RGB konvertieren (mit Unterstützung für Multi-Farben wie "black/white")
-        function getColorRGB(colorName) {
-            if (!colorName) return '#CCCCCC';
+        function getColorFromName(colorName) {
+            if (!colorName) return '#cccccc';
 
-            const lowerColor = colorName.toLowerCase().trim();
+            const cleanName = colorName.toLowerCase().trim();
 
-            // Wenn Farbe "/" enthält, als Array zurückgeben
-            if (lowerColor.includes('/')) {
-                return lowerColor.split('/').map(c => {
-                    const trimmed = c.trim();
-                    return colorMap[trimmed] || findPartialColorMatch(trimmed) || '#CCCCCC';
-                });
+            // Bei Kombinationen (z.B. "black/white") - beide Farben zurückgeben
+            if (cleanName.includes('/')) {
+                const colors = cleanName.split('/').map(c => c.trim());
+                const color1 = colorMap[colors[0]] || '#cccccc';
+                const color2 = colorMap[colors[1]] || '#cccccc';
+                return [color1, color2];
             }
 
-            // Direkte Übereinstimmung
-            if (colorMap[lowerColor]) {
-                return colorMap[lowerColor];
+            // Exakte Übereinstimmung
+            if (colorMap[cleanName]) {
+                return colorMap[cleanName];
             }
 
-            // Teilübereinstimmung suchen
-            return findPartialColorMatch(lowerColor) || '#CCCCCC';
-        }
-
-        function findPartialColorMatch(colorName) {
+            // Teilübereinstimmung
             for (const [key, value] of Object.entries(colorMap)) {
-                if (colorName.includes(key) || key.includes(colorName)) {
+                if (cleanName.includes(key) || key.includes(cleanName)) {
                     return value;
                 }
             }
-            return null;
+
+            return '#cccccc';
         }
 
-        // Farb-Kreis HTML erstellen (mit Unterstützung für geteilte Farben)
         function createColorCircle(colorName) {
-            const colors = getColorRGB(colorName);
+            const colors = getColorFromName(colorName);
 
-            // Wenn Array (mehrere Farben), geteilten Kreis erstellen
             if (Array.isArray(colors)) {
-                const gradient = `linear-gradient(90deg, ${colors[0]} 50%, ${colors[1]} 50%)`;
-                return `<div class="color-circle" style="background: ${gradient};" data-color="${colorName}"></div>`;
+                // Geteilter Kreis für Kombinationsfarben
+                return `
+                    <div class="color-circle" style="background: linear-gradient(90deg, ${colors[0]} 50%, ${colors[1]} 50%);">
+                        <div class="color-circle-tooltip">${colorName}</div>
+                    </div>
+                `;
+            } else {
+                // Einfarbiger Kreis
+                return `
+                    <div class="color-circle" style="background-color: ${colors};">
+                        <div class="color-circle-tooltip">${colorName}</div>
+                    </div>
+                `;
             }
-
-            // Einzelfarbe
-            return `<div class="color-circle" style="background-color: ${colors};" data-color="${colorName}"></div>`;
         }
 
         // Excel-Datei laden
@@ -842,7 +1005,7 @@
                                 ${product.colorCount} Farbe${product.colorCount !== 1 ? 'n' : ''} • 
                                 ${product.sizeCount} Größe${product.sizeCount !== 1 ? 'n' : ''}
                             </div>
-                            <div class="product-colors">
+                            <div class="color-circles">
                                 ${colorCircles}
                             </div>
                             <div class="product-price">${product.uvp.toFixed(2)} €</div>
@@ -991,34 +1154,81 @@
             document.getElementById('cartSidebar').classList.toggle('active');
         }
 
-        // Anfrage absenden
-        function submitInquiry() {
+        // Kontaktformular öffnen
+        function openContactForm() {
             if (cart.length === 0) {
                 alert('Ihr Anfragekorb ist leer.');
                 return;
             }
 
-            const name = prompt('Ihr Name:');
-            if (!name) return;
+            // Warenkorbdaten ins Formular übernehmen
+            const itemsList = document.getElementById('inquiryItemsList');
+            itemsList.innerHTML = cart.map(item => `
+                <div class="inquiry-item">
+                    <div class="inquiry-item-details">
+                        <strong>${item.name}</strong>
+                        <small>${item.manufacturer} | Farbe: ${item.colour} | Größe: ${item.size} | Menge: ${item.quantity}</small>
+                    </div>
+                    <div style="font-weight: 700; color: var(--color-primary);">
+                        ${item.uvp.toFixed(2)} €
+                    </div>
+                </div>
+            `).join('');
 
-            const email = prompt('Ihre E-Mail:');
-            if (!email) return;
+            // Modal öffnen
+            toggleCart(); // Warenkorb schließen
+            document.getElementById('contactModal').classList.add('active');
+        }
 
-            const phone = prompt('Ihre Telefonnummer (optional):') || '';
-            const message = prompt('Nachricht/Anmerkungen (optional):') || '';
+        // Kontaktformular schließen
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('active');
+        }
 
-            const inquiryData = {
-                customer: { name, email, phone, message },
+        // Kontaktformular absenden
+        function submitContactForm(event) {
+            event.preventDefault();
+
+            const formData = {
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                phone: document.getElementById('contactPhone').value,
+                company: document.getElementById('contactCompany').value,
+                message: document.getElementById('contactMessage').value,
                 items: cart
             };
 
-            console.log('Anfrage:', inquiryData);
-            alert('Vielen Dank für Ihre Anfrage! Wir melden uns in Kürze bei Ihnen.\n\nDetails wurden in der Konsole ausgegeben.');
+            console.log('Anfragedaten:', formData);
+
+            // E-Mail-Text erstellen
+            let emailBody = `Neue Produktanfrage von ${formData.name}\n\n`;
+            emailBody += `Kontaktdaten:\n`;
+            emailBody += `Name: ${formData.name}\n`;
+            emailBody += `E-Mail: ${formData.email}\n`;
+            if (formData.phone) emailBody += `Telefon: ${formData.phone}\n`;
+            if (formData.company) emailBody += `Firma: ${formData.company}\n`;
+            emailBody += `\nAngeforderte Artikel:\n\n`;
+
+            cart.forEach((item, index) => {
+                emailBody += `${index + 1}. ${item.name} (${item.manufacturer})\n`;
+                emailBody += `   Artikel-Nr.: ${item.sku}\n`;
+                emailBody += `   Farbe: ${item.colour} | Größe: ${item.size}\n`;
+                emailBody += `   Menge: ${item.quantity} | Preis: ${item.uvp.toFixed(2)} €\n\n`;
+            });
+
+            if (formData.message) {
+                emailBody += `\nNachricht:\n${formData.message}`;
+            }
+
+            alert('✅ Vielen Dank für Ihre Anfrage!\n\nWir haben folgende Daten erhalten und melden uns in Kürze bei Ihnen.\n\n(In einer Live-Version würde diese Anfrage per E-Mail versendet oder in einer Datenbank gespeichert.)');
+
+            // Formular zurücksetzen
+            document.getElementById('contactForm').reset();
+            closeContactModal();
 
             // Warenkorb leeren
             cart = [];
             updateCartDisplay();
-            toggleCart();
         }
 
         // Filter-Funktionen
